@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>What is Flarecast? · Embr</title>
+  <meta name="description" content="Flarecast is Embr's personalized prediction engine. It learns what a usual day looks like for you and looks for the changes that tend to come before your RA flares." />
+  <meta name="theme-color" content="#0058DB" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400..800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="subpage">
+  <a class="skip" href="#flarecast">Skip to the main content</a>
+
+  <header class="nav is-light" data-nav>
+    <a class="brand" href="index.html" aria-label="Embr home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF3D1F" d="M12.2 1.8c.9 3.4 5.3 5.6 5.3 11a5.5 5.5 0 0 1-11 0c0-2.3 1.1-4 2.5-5.2.1 1.8 1 2.9 2.1 3.4-.4-3.6.1-6.5 1.1-9.2Z" /><path fill="#FFB547" d="M12 11.5c.4 1.6 2.6 2.6 2.6 4.8a2.6 2.6 0 0 1-5.2 0c0-1.4.8-2.2 1.5-2.8.1.7.4 1.1.8 1.3-.1-1.3 0-2.3.3-3.3Z" /></svg>
+      <span>Embr</span>
+    </a>
+    <nav class="nav__links" aria-label="Main">
+      <a href="index.html#how">How it works</a>
+      <a href="flarecast.html" aria-current="page">Flarecast</a>
+      <a href="index.html#privacy">Privacy</a>
+    </nav>
+    <a class="btn btn--nav" data-demo href="#">Try our demo</a>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <a class="back-link" href="index.html#how">Back to how Embr works</a>
+        <p class="page-hero__tag">The technology behind Embr</p>
+        <h1>What is Flarecast?</h1>
+        <p class="page-hero__lead">Flarecast is Embr's personalized prediction engine. Instead of comparing you with anyone else, it learns what a usual day looks like for you, then looks for the small changes that tend to come before your flares.</p>
+      </div>
+    </section>
+
+    <section class="flarecast" id="flarecast">
+      <div class="container">
+
+        <!-- the diagram: four kinds of data flow into Flarecast, which produces your forecast -->
+        <figure class="fc-diagram reveal" aria-label="How Flarecast works: four kinds of data go in, a personal forecast comes out">
+          <ul class="fc-inputs">
+            <li style="--c:#0058DB">
+              <span class="fc-icon"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.3-9.2-8.8A5.3 5.3 0 0 1 12 6.1a5.3 5.3 0 0 1 9.2 5.1C19 15.7 12 20 12 20Z" /></svg></span>
+              <div><b>Symptoms</b><span>Pain, stiffness, fatigue, joint activity and flares you record</span></div>
+            </li>
+            <li style="--c:#7A4BD6">
+              <span class="fc-icon"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" /></svg></span>
+              <div><b>Lifestyle patterns</b><span>Sleep, stress, activity, medications and more</span></div>
+            </li>
+            <li style="--c:#E0466A">
+              <span class="fc-icon"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6" /></svg></span>
+              <div><b>Health measurements</b><span>Readings like resting heart rate, when available</span></div>
+            </li>
+            <li style="--c:#2E8B57">
+              <span class="fc-icon"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .6-8 6 6 0 0 0-11.5 1.6A3.3 3.3 0 0 0 7 18Z" /></svg></span>
+              <div><b>Environment</b><span>Local pressure, humidity, temperature and wind</span></div>
+            </li>
+          </ul>
+
+          <div class="fc-arrow" aria-hidden="true"></div>
+
+          <div class="fc-engine">
+            <p class="fc-engine__name">Flarecast</p>
+            <p class="fc-engine__sub">personalized prediction engine</p>
+            <ol>
+              <li>Learns your personal baseline</li>
+              <li>Spots changes and trends</li>
+              <li>Weighs what matters for you</li>
+            </ol>
+          </div>
+
+          <div class="fc-arrow" aria-hidden="true"></div>
+
+          <div class="fc-output">
+            <p class="fc-output__title">Your forecast</p>
+            <ul class="fc-days">
+              <li><span>Today</span><b class="lvl lvl--low">Low</b></li>
+              <li><span>Fri</span><b class="lvl lvl--low">Low</b></li>
+              <li><span>Sat</span><b class="lvl lvl--mod">Moderate</b></li>
+              <li><span>Sun</span><b class="lvl lvl--mod">Moderate</b></li>
+            </ul>
+            <p class="fc-output__why">Why: stiffness rising for 4 days, air pressure dropping</p>
+          </div>
+          <figcaption class="sr-only">Symptoms, lifestyle patterns, health measurements and environment flow into Flarecast, which learns your baseline, spots changes and weighs what matters for you, then shows your forecast for the coming days.</figcaption>
+        </figure>
+
+        <!-- the technology, step by step -->
+        <div class="fc-steps">
+          <article class="reveal">
+            <h3>It learns your normal</h3>
+            <p>During your first 14 days, Flarecast works out your personal baseline for each symptom: your typical level and how much it usually varies from day to day. Until then, it shows "Learning your patterns" instead of a forecast.</p>
+          </article>
+          <article class="reveal">
+            <h3>It watches for change</h3>
+            <p>Each day it compares your last week with your baseline. A higher-than-usual average and a steady climb in symptoms are the strongest early signals. More painful or swollen joints, longer morning stiffness, poor sleep, stress, illness, missed doses and falling air pressure each add a little more.</p>
+          </article>
+          <article class="reveal">
+            <h3>It adapts to you</h3>
+            <p>Once you've recorded a couple of flares, Flarecast looks at what was happening in the week before each one and gives more weight to the signals that matter most for you. No two forecasts are tuned the same way.</p>
+          </article>
+          <article class="reveal">
+            <h3>It shows its reasons</h3>
+            <p>For today and the next three days you see a 0 to 100 score, a Low, Moderate or High level, the main reasons in plain language, and how confident it is. Confidence grows as you check in more.</p>
+          </article>
+        </div>
+
+        <p class="fc-note reveal">Flarecast shows what your patterns suggest, never a promise. It runs on your device, it isn't a medical device, it doesn't diagnose, and it never tells you to change your treatment.</p>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="container">
+        <div class="cta reveal">
+          <img class="cta__embr" src="assets/embr/front.webp" alt="Embr, a little flame with a body of warm stones, smiling" width="198" height="335" loading="lazy" />
+          <div class="cta__text">
+            <h2>Ready to meet Embr?</h2>
+            <p>Try the demo with 90 days of example data. No sign-up needed.</p>
+            <a class="btn btn--blue" data-demo href="#">Try our demo</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <!-- TODO: replace the placeholder location and email with Embr's real ones -->
+    <div class="site-footer__bar">
+      <a class="site-footer__brand" href="index.html" aria-label="Embr home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF3D1F" d="M12.2 1.8c.9 3.4 5.3 5.6 5.3 11a5.5 5.5 0 0 1-11 0c0-2.3 1.1-4 2.5-5.2.1 1.8 1 2.9 2.1 3.4-.4-3.6.1-6.5 1.1-9.2Z" /><path fill="#FFB547" d="M12 11.5c.4 1.6 2.6 2.6 2.6 4.8a2.6 2.6 0 0 1-5.2 0c0-1.4.8-2.2 1.5-2.8.1.7.4 1.1.8 1.3-.1-1.3 0-2.3.3-3.3Z" /></svg>
+        <span>Embr</span>
+      </a>
+      <div class="site-footer__contact">
+        <span class="site-footer__item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.4-6-10.5a6 6 0 0 1 12 0C18 15.6 12 21 12 21Z" /><circle cx="12" cy="10.5" r="2.2" /></svg>City, Province</span>
+        <a class="site-footer__item" href="mailto:hello@example.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2" /><path d="M4 7l8 6 8-6" /></svg>hello@example.com</a>
+      </div>
+      <nav class="site-footer__links" aria-label="Footer">
+        <a href="legal.html#privacy">Privacy</a>
+        <a href="legal.html#terms">Terms</a>
+        <a href="legal.html#choices">Your Privacy Choices</a>
+        <span>© Embr 2026</span>
+      </nav>
+    </div>
+    <p class="site-footer__note">Embr is a wellness and self-tracking tool, not a medical device.</p>
+  </footer>
+
+  <script type="module" src="js/site.js"></script>
+</body>
+</html>
