@@ -1,0 +1,9 @@
+# Secrets: never commit environment files
+.env
+.env.*
+
+# Local-only working notes (kept on each person's own computer)
+AGENTS.md
+CLAUDE.md
+TODO.md
+DONE.md
