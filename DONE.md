@@ -2,6 +2,7 @@
 
 Finished tasks, newest first.
 
+- 2026-11-13: Create the `.env` file (`apps/api/.env`, with a committed `.env.example`)
 - 2026-11-13: Update the README
 - 2026-11-13: Track the to-do and done lists on GitHub
 - 2026-11-13: Decided the tech stack

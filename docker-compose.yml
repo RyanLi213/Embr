@@ -1,0 +1,23 @@
+# Local development services. Start with `pnpm db:up`, stop with `pnpm db:down`.
+services:
+  db:
+    # Postgres with the pgvector extension available
+    image: pgvector/pgvector:pg17
+    environment:
+      # Local-only credentials for the database on your own laptop
+      POSTGRES_USER: embr
+      POSTGRES_PASSWORD: embr
+      POSTGRES_DB: embr
+    ports:
+      - "5432:5432"
+    volumes:
+      - embr-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U embr -d embr"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  # Keeps the data between restarts. `docker compose down -v` wipes it.
+  embr-db:

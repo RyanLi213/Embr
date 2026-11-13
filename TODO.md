@@ -2,7 +2,6 @@
 
 Active tasks only. Finished tasks move to `DONE.md`.
 
-- [ ] Create the `.env` file
 - [ ] Discuss the grand vision with Lisa and Leo
 
 ## Grand vision (draft, to discuss with Lisa and Leo)

@@ -87,6 +87,13 @@ You need [Node.js](https://nodejs.org) 26, [pnpm](https://pnpm.io), [uv](https:/
 # Install dependencies
 pnpm install
 
+# Start the local database (Postgres in Docker) and set up its tables
+pnpm db:up
+pnpm db:migrate
+
+# First time only: create the API's settings file
+cp apps/api/.env.example apps/api/.env
+
 # Run the web app at http://localhost:3000
 pnpm --filter @embr/web dev
 
@@ -96,7 +103,7 @@ pnpm --filter @embr/api dev
 # Run the public website at http://localhost:4173
 python -m http.server 4173 --directory apps/website
 
-# Check everything
+# Check everything (the tests need Docker running)
 pnpm lint
 pnpm typecheck
 pnpm test

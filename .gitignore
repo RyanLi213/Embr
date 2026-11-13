@@ -1,6 +1,7 @@
 # Secrets: never commit environment files
 .env
 .env.*
+!.env.example
 
 # Local-only working notes (kept on each person's own computer)
 /AGENTS.md

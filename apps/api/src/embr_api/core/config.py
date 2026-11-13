@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     environment: str = "local"
     version: str = "0.1.0"
 
+    # Default matches the local database in docker-compose.yml. Never a real secret.
+    database_url: str = "postgresql+asyncpg://embr:embr@localhost:5432/embr"
+
 
 @lru_cache
 def get_settings() -> Settings:
