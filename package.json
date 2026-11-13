@@ -1,0 +1,19 @@
+{
+  "name": "embr",
+  "private": true,
+  "description": "Embr: a daily companion app for people living with arthritis",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.11"
+  }
+}
