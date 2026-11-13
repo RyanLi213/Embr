@@ -26,7 +26,7 @@ Also planned:
 - **Voice check-in:** speak instead of tapping. The AI fills in the check-in and the person confirms it.
 - **Personalized exercise:** suggestions that fit how the person feels today, including nearby options such as pools and warm-water classes.
 - **Group video calls** about living with arthritis.
-- **Group chats** texting other people living with arthritis to share advice and support.
+- **Group chats** for texting other people living with arthritis to share advice and support.
 - **Medical document upload:** reports and medication lists personalize the app. The person confirms every detail the AI reads.
 - **Paid care tier:**
   - Advice from licensed physiotherapists and nurses by chat.
