@@ -32,6 +32,8 @@ Also planned:
   - 1-on-1 video appointments with doctors through partner clinics.
 
   Care is offered region by region, because professionals must be licensed where the patient lives. It helps between visits and never replaces a person's own doctor.
+ 
+#### Pitch: The only arthritis app where your daily check-ins make the news and the community personal to you.
 
 ## Safety and privacy
 
