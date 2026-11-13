@@ -1,0 +1,40 @@
+[project]
+name = "embr-api"
+version = "0.1.0"
+description = "Embr backend API"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.162.7",
+    "pydantic-settings>=2.16.3",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+# E/W: style, F: bugs, I: import order, B: likely bugs, UP: modern syntax,
+# N: naming, SIM: simplifications, ASYNC: async mistakes, S: security
+select = ["E", "W", "F", "I", "B", "UP", "N", "SIM", "ASYNC", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"] # tests use assert
+
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

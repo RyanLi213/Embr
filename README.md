@@ -74,7 +74,7 @@ Early development.
 apps/
   web/        Next.js web app (the product)
   website/    public website
-  api/        FastAPI backend (coming next)
+  api/        FastAPI backend
 packages/     shared code (coming later)
 ```
 
@@ -88,6 +88,9 @@ pnpm install
 
 # Run the web app at http://localhost:3000
 pnpm --filter @embr/web dev
+
+# Run the API at http://localhost:8000 (interactive docs at /docs)
+pnpm --filter @embr/api dev
 
 # Run the public website at http://localhost:4173
 python -m http.server 4173 --directory apps/website
