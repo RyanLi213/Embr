@@ -3,8 +3,8 @@
 .env.*
 
 # Local-only working notes (kept on each person's own computer)
-AGENTS.md
-CLAUDE.md
+/AGENTS.md
+/CLAUDE.md
 
 # Dependencies and build output
 node_modules/
