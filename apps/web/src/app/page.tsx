@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ApiStatus } from "@/components/api-status"
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
         A daily companion for living with arthritis.
       </p>
       <Button size="lg">Check in</Button>
+      <ApiStatus />
     </main>
   );
 }
