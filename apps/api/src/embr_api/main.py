@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from embr_api.core.config import Settings, get_settings
 from embr_api.core.database import create_engine, create_session_factory
@@ -25,6 +26,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title=app_settings.app_name, version=app_settings.version, lifespan=lifespan)
     app.dependency_overrides[get_settings] = lambda: app_settings
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=app_settings.cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     v1 = APIRouter(prefix="/v1")
     v1.include_router(health.router)

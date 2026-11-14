@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     # Default matches the local database in docker-compose.yml. Never a real secret.
     database_url: str = "postgresql+asyncpg://embr:embr@localhost:5432/embr"
 
+    # Web addresses allowed to call this API from a browser
+    cors_origins: list[str] = ["http://localhost:3000"]
+
 
 @lru_cache
 def get_settings() -> Settings:
