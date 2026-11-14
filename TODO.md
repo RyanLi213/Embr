@@ -4,6 +4,25 @@ Active tasks only. Finished tasks move to `DONE.md`.
 
 - [ ] Discuss the grand vision with Lisa and Leo
 
+## Guests and accounts (agreed 2026-11-14)
+
+Embr never forces sign-up. The home page welcomes everyone and the core app
+works without an account. Guests get a limited version, so signing up is
+rewarded, not required.
+
+| | Guest | Signed in |
+| --- | --- | --- |
+| Check-in and calendar | Saved in this browser only | Saved to the account, synced across phone and computer |
+| Personalization | Basic: a short survey | Better over time: survey, check-in history and uploaded medical documents |
+| Community and chat | No | Yes |
+
+- Guests see a banner on the check-in and calendar screens: "You're not signed
+  in, so your check-ins are saved only in this browser. You'll lose them if you
+  clear your browsing data, use a private window, or switch devices. Create a
+  free account to keep them safe."
+- When a guest signs up, their past check-ins move into the new account, so
+  nothing is lost.
+
 ## Grand vision (draft, to discuss with Lisa and Leo)
 
 Goal: more than a check-in app, which people barely use. Two things set Embr apart:
