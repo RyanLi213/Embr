@@ -1,5 +1,7 @@
 # Embr
 
+[![CI](https://github.com/RyanLi213/Embr/actions/workflows/ci.yml/badge.svg)](https://github.com/RyanLi213/Embr/actions/workflows/ci.yml)
+
 A daily companion app for people living with arthritis.
 
 ## Why
@@ -49,7 +51,7 @@ Also planned:
 Early development.
 
 - [x] Public website
-- [ ] Web app and API foundation (in progress)
+- [x] Web app and API foundation: Next.js, FastAPI, Postgres, tests and CI
 - [ ] Accounts, daily check-in and calendar
 - [ ] Voice check-in
 - [ ] AI informant, community and exercise
