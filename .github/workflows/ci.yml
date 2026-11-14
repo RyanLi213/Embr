@@ -1,0 +1,87 @@
+# Continuous integration: runs every check on every push to main and every pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# If a newer push arrives for the same branch, cancel the older run
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, types and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v5
+
+      # --- Tools ---
+      - name: Set up pnpm (version from package.json)
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node (version from .node-version)
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Set up uv (Python package manager)
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      # --- Dependencies (exact versions from the lock files) ---
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python dependencies
+        working-directory: apps/api
+        run: uv sync --locked
+
+      # --- Fast checks first, so mistakes fail quickly ---
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: API contract is up to date
+        run: pnpm check:api
+
+      # --- Tests ---
+      - name: API tests (real Postgres via Testcontainers, 90% coverage minimum)
+        run: pnpm --filter @embr/api test
+
+      - name: Web tests (90% coverage minimum)
+        run: pnpm --filter @embr/web test:coverage
+
+      # --- End to end: real browser -> web app -> API -> database ---
+      - name: Start the database
+        run: pnpm db:up
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
+
+      - name: Install the Playwright browser
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: End-to-end test
+        run: pnpm test:e2e
+
+      - name: Save the Playwright report if the end-to-end test failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7
