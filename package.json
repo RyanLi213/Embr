@@ -12,9 +12,13 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "clean": "turbo run clean",
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
-    "db:migrate": "pnpm --filter @embr/api db:migrate"
+    "db:migrate": "pnpm --filter @embr/api db:migrate",
+    "generate:api": "pnpm --filter @embr/api openapi && pnpm --filter @embr/api-client generate",
+    "check:api": "pnpm generate:api && git diff --exit-code -- packages/api-client",
+    "test:e2e": "pnpm --filter @embr/web test:e2e"
   },
   "devDependencies": {
     "turbo": "^2.11.11"

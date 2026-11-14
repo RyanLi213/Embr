@@ -8,6 +8,7 @@
     "typecheck": "uv run mypy src tests",
     "test": "uv run pytest",
     "db:migrate": "uv run alembic upgrade head",
-    "openapi": "uv run python scripts/export_openapi.py"
+    "openapi": "uv run python scripts/export_openapi.py",
+    "clean": "node -e \"for (const d of ['.pytest_cache', '.mypy_cache', '.ruff_cache', '.coverage', 'htmlcov']) require('fs').rmSync(d, { recursive: true, force: true })\""
   }
 }

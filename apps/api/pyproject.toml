@@ -20,6 +20,7 @@ dev = [
     "httpx>=0.28.1",
     "mypy>=2.4.1",
     "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
     "ruff>=0.17.5",
     "testcontainers[postgres]>=4.15.0",
 ]
@@ -42,3 +43,8 @@ plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=embr_api --cov-report=term-missing --cov-fail-under=90"
+
+[tool.coverage.run]
+branch = true
+source = ["embr_api"]
