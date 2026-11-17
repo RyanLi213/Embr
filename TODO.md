@@ -4,6 +4,12 @@ Active tasks only. Finished tasks move to `DONE.md`.
 
 - [ ] Discuss the grand vision with Lisa and Leo
 
+## Later
+
+- [ ] Build our own authentication to replace Clerk, once Embr has real users.
+  Until then, Clerk handles sign-in, and the API keeps its own `users` table
+  and a single login-check module, so the swap stays small.
+
 ## Guests and accounts (agreed 2026-11-14)
 
 Embr never forces sign-up. The home page welcomes everyone and the core app
