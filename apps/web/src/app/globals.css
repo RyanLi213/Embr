@@ -8,7 +8,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -46,85 +45,94 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Embr brand colours, usable as classes such as `text-ember` or `bg-day-good` */
+  --color-ember: var(--ember);
+  --color-link: var(--link);
+  --color-kicker: var(--kicker);
+  --color-day-good: var(--day-good);
+  --color-day-okay: var(--day-okay);
+  --color-day-hard: var(--day-hard);
 }
 
+/*
+ * Embr's palette, taken from the Figma design and the marketing site.
+ * Embr has no dark mode yet, so there is only this one set of colours.
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* Brand */
+  --ember: #ff3d1f; /* the flame: logo, accents and large text only */
+  --link: #0058db; /* text links such as "Sign in" */
+  --kicker: #8d512f; /* small all-caps labels above headings */
+  --day-good: #5caf78;
+  --day-okay: #e6a52b;
+  --day-hard: #e55b70;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* shadcn/ui tokens, mapped to the brand */
+  --background: #fff8ef; /* cream */
+  --foreground: #1d2a4a; /* navy */
+  --card: #ffffff;
+  --card-foreground: #1d2a4a;
+  --popover: #ffffff;
+  --popover-foreground: #1d2a4a;
+  /*
+   * A deeper ember than the flame. White text on the bright flame colour is
+   * too faint to read at button size (3.5:1); this shade passes the WCAG AA
+   * contrast rule (5.4:1 on white).
+   */
+  --primary: #c93010;
+  --primary-foreground: #ffffff;
+  --secondary: #fff0de;
+  --secondary-foreground: #1d2a4a;
+  --muted: #f6efe4;
+  --muted-foreground: #4b587a;
+  --accent: #fff2e7;
+  --accent-foreground: #1d2a4a;
+  --destructive: #c4283f;
+  --border: #eadfce;
+  --input: #eadfce;
+  --ring: #0058db;
+  --chart-1: #5caf78;
+  --chart-2: #e6a52b;
+  --chart-3: #e55b70;
+  --chart-4: #9552a4;
+  --chart-5: #0058db;
+  --radius: 0.875rem;
+  --sidebar: #fffdf9;
+  --sidebar-foreground: #4b587a;
+  --sidebar-primary: #c93010;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fff0e9;
+  --sidebar-accent-foreground: #c93010;
+  --sidebar-border: #eadfce;
+  --sidebar-ring: #0058db;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
+    min-width: 320px;
+  }
+  /* A clear, thick focus outline for people who move around with the keyboard */
+  :focus-visible {
+    @apply outline-3 outline-offset-3 outline-ring/40;
+  }
+}
+
+/* Respect the "reduce motion" setting in the visitor's operating system */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
