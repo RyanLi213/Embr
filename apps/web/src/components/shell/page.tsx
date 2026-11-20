@@ -14,11 +14,18 @@ export function Page({ className, children }: { className?: string; children: Re
   );
 }
 
+type KickerProps = {
+  /** Use "h2" when the label is the only heading of its section */
+  as?: "p" | "h2";
+  className?: string;
+  children: React.ReactNode;
+};
+
 /** Small all-caps label above a heading, such as "YOUR RHYTHM". */
-export function Kicker({ className, children }: { className?: string; children: React.ReactNode }) {
+export function Kicker({ as: Tag = "p", className, children }: KickerProps) {
   return (
-    <p className={cn("text-xs font-black tracking-[0.13em] text-kicker uppercase", className)}>
+    <Tag className={cn("text-xs font-black tracking-[0.13em] text-kicker uppercase", className)}>
       {children}
-    </p>
+    </Tag>
   );
 }
