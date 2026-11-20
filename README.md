@@ -105,9 +105,11 @@ pnpm --filter @embr/api dev
 # Run the public website at http://localhost:4173
 python -m http.server 4173 --directory apps/website
 
-# Check everything (the tests need Docker running)
-pnpm lint
-pnpm typecheck
-pnpm test
+# Check everything, exactly as CI does (needs Docker running)
+pnpm check
+
+# Make a production build
 pnpm build
 ```
+
+What each check and test does, and how to run them one at a time: [docs/testing.md](docs/testing.md).
