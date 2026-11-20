@@ -18,7 +18,8 @@
     "db:migrate": "pnpm --filter @embr/api db:migrate",
     "generate:api": "pnpm --filter @embr/api openapi && pnpm --filter @embr/api-client generate",
     "check:api": "pnpm generate:api && git diff --exit-code -- packages/api-client",
-    "test:e2e": "pnpm --filter @embr/web test:e2e"
+    "test:e2e": "pnpm --filter @embr/web test:e2e",
+    "check": "pnpm lint && pnpm typecheck && pnpm check:api && pnpm --filter @embr/api test && pnpm --filter @embr/web test:coverage && pnpm db:up && pnpm db:migrate && pnpm test:e2e"
   },
   "devDependencies": {
     "turbo": "^2.11.11"
