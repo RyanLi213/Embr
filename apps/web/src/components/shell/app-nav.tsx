@@ -53,6 +53,7 @@ export function Sidebar() {
               key={href}
               href={href}
               aria-current={current ? "page" : undefined}
+              aria-label={needsAccount ? `${label} (needs an account)` : undefined}
               className={cn(
                 "relative flex min-h-[54px] items-center gap-3.5 rounded-[15px] px-[15px] font-bold text-sidebar-foreground transition-colors hover:bg-accent hover:text-foreground",
                 current &&
@@ -67,12 +68,7 @@ export function Sidebar() {
               )}
               <Icon aria-hidden className="size-[22px]" />
               <span>{label}</span>
-              {needsAccount && (
-                <>
-                  <Lock aria-hidden className="ml-auto size-4" />
-                  <span className="sr-only">(needs an account)</span>
-                </>
-              )}
+              {needsAccount && <Lock aria-hidden className="ml-auto size-4" />}
             </Link>
           );
         })}

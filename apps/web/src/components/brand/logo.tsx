@@ -2,12 +2,15 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
-/** Embr's logo: a little flame holding an "e", then the name. Links to the home screen. */
+/**
+ * Embr's logo: a little flame holding an "e", then the name. Links to the
+ * home screen. Screen readers read the visible word "embr" (the flame is
+ * decoration), so the spoken name matches what people see on screen.
+ */
 export function Logo({ className }: { className?: string }) {
   return (
     <Link
       href="/"
-      aria-label="Embr home"
       className={cn(
         "inline-flex h-12 items-center gap-2.5 rounded-lg text-[28px] font-black tracking-[-0.04em] text-foreground",
         className,
@@ -19,7 +22,7 @@ export function Logo({ className }: { className?: string }) {
       >
         e
       </span>
-      <span aria-hidden>embr</span>
+      <span>embr</span>
     </Link>
   );
 }
