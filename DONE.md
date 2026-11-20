@@ -2,6 +2,7 @@
 
 Finished tasks, newest first.
 
+- 2026-11-20: Milestone 2 part 1, `feature/home-screen` (theme, logo, mascot, landscape, app shell, welcome and home screens, locked pages, tests, `pnpm check` and the testing guide), merged in PR #1
 - 2026-11-14: Milestone 1, walking skeleton (web app, API, database, tests, CI)
 - 2026-11-13: Create the `.env` file (`apps/api/.env`, with a committed `.env.example`)
 - 2026-11-13: Update the README

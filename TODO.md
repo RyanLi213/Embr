@@ -9,8 +9,6 @@ Active tasks only. Finished tasks move to `DONE.md`.
 Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
-- [ ] `feature/home-screen`: theme, logo, mascot, landscape, app shell, welcome
-  and home screens, locked pages, tests
 - [ ] Put the web app online right after `feature/home-screen` merges: a second
   Vercel project with root directory `apps/web`. The API stays on the laptop
   until accounts need it.
