@@ -76,24 +76,73 @@ The database schema only changes through Alembic migrations in `apps/api/migrati
 
 ## Run all checks
 
-Run from the repo root, fastest first. Docker must be running.
+Each check below can be run on its own, from the repo root. Run the one that matches what you changed while you work, fastest first. Before calling a change done, run all of them at once with `pnpm check` (Docker Desktop must be running): it runs every check CI runs, in the same order, and stops at the first failure.
+
+What each check is and why it exists: [docs/testing.md](docs/testing.md).
+
+### Lint
 
 ```
-pnpm lint            # Ruff (API) + ESLint (web)
-pnpm typecheck       # strict mypy (API) + TypeScript (web, api-client)
-pnpm test            # pytest with a real Postgres (API) + Vitest (web)
-pnpm check:api       # the committed typed client matches the current API
-pnpm db:up           # needed for the end-to-end test
-pnpm test:e2e        # Playwright: real browser -> web app -> API -> database
+pnpm lint
 ```
 
-Coverage minimums: API 90% (runs with `pnpm test`), web 90% (`pnpm --filter @embr/web test:coverage`).
+- **Checks:** code style and common mistakes, without running the code. ESLint (web), Ruff (API).
+- **Run after:** any edit. It takes seconds.
+- **If it fails:** the output names the file, line and rule. For Ruff formatting, run `uv run ruff format .` in `apps/api`.
 
-### If something fails
+### Type check
 
-- **Ruff formatting**: run `uv run ruff format .` in `apps/api`.
-- **`check:api` shows a difference**: the API changed without regenerating the client. Run `pnpm generate:api` and commit the result.
-- **Database tests or e2e can't connect**: Docker Desktop isn't running, or `pnpm db:up` wasn't run.
-- **Next.js error overlay after installing packages**: stop the web app, run `pnpm clean` (deletes build and test caches in every app), then start it again.
+```
+pnpm typecheck
+```
+
+- **Checks:** every function gets the kind of data it expects. TypeScript (web, api-client), strict mypy (API).
+- **Run after:** changing a function's inputs or outputs, or adding a page.
+- **If it fails:** read the "is not assignable to" message: it names what was given and what was expected. If it mentions `.next/dev/types` or a deleted page, run `pnpm clean` and try again.
+
+### API contract
+
+```
+pnpm check:api
+```
+
+- **Checks:** the web app's typed API client matches the current API.
+- **Run after:** any change in `apps/api` that touches routes or schemas.
+- **If it fails:** run `pnpm generate:api` and commit the regenerated files with the API change.
+
+### API tests
+
+```
+pnpm --filter @embr/api test
+```
+
+- **Checks:** pytest, including integration tests against a real throwaway Postgres (Testcontainers). Coverage must stay at or above 90%.
+- **Run after:** any change in `apps/api`. Needs Docker Desktop running.
+- **If it fails:** "can't connect" means Docker isn't running. A coverage failure lists the missing lines under `Missing`.
+
+### Web unit tests and coverage
+
+```
+pnpm --filter @embr/web test:coverage
+```
+
+- **Checks:** Vitest unit tests in `apps/web/src` (`*.test.ts(x)`). Coverage must stay at or above 90%.
+- **Run after:** any change in `apps/web/src`. While working, `pnpm --filter @embr/web test <name>` runs only the test files whose name contains `<name>`.
+- **If it fails:** the output shows what was expected and what was received. For coverage, the `Uncovered Line #s` column shows which lines need a test.
+
+### End-to-end tests
+
+```
+pnpm db:up
+pnpm test:e2e
+```
+
+- **Checks:** Playwright clicks through the real app in Chromium (browser → web app → API → database), and axe checks every page for accessibility (WCAG 2.1 AA) at computer and phone size.
+- **Run after:** changing a page, the menu, or anything a user journey depends on. `pnpm --filter @embr/web test:e2e <name>` runs one file.
+- **If it fails:** "can't connect" means Docker isn't running or `pnpm db:up` wasn't run. A timeout on the very first page is usually the dev server compiling; run again. Each failure saves a trace under `apps/web/test-results/` to replay with `pnpm --filter @embr/web exec playwright show-trace <trace.zip>`.
+
+### If the web app shows a Next.js error after installing packages
+
+Stop the web app, run `pnpm clean` (deletes build and test caches in every app), then start it again.
 
 Never call a change done while a check fails.
