@@ -263,6 +263,7 @@ For a component, "run" becomes `render(<ComingSoon ... />)` and "check" becomes 
 - **API tests or end-to-end tests can't connect:** Docker Desktop isn't running, or `pnpm db:up` wasn't run. Docker Desktop takes a moment to start after you open it.
 - **An end-to-end test times out on its first page:** the web app compiles each page on its first visit. Run it again; if it still fails, it is real.
 - **Seeing why an end-to-end test failed:** each failure saves a trace under `apps/web/test-results/`. Open it with `pnpm --filter @embr/web exec playwright show-trace <path to trace.zip>` to replay the test step by step.
+- **An end-to-end test failed in CI:** open the failed run in the repo's Actions tab, download `playwright-report` under Artifacts, unzip it, and run `pnpm --filter @embr/web exec playwright show-report <unzipped folder>`. It shows every test, the error, and a step-by-step replay of each failure. GitHub deletes the report after 7 days.
 - **Coverage below 90%:** the table's "Uncovered Line #s" column shows exactly which lines need a test.
 
 Never call a change done while a check fails.
