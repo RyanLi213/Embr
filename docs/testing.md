@@ -201,7 +201,7 @@ Why not test everything end-to-end? Because end-to-end tests are slow, and when 
 
 ## What CI runs
 
-`.github/workflows/ci.yml` runs on **every push to `main` and every pull request**, on a fresh Ubuntu machine. It runs the same steps as `pnpm check`, plus installing tools and the Playwright browser first.
+`.github/workflows/ci.yml` runs on **every push to `main` and every pull request**, on a fresh Ubuntu machine. It runs the same steps as `pnpm check`, plus installing tools and the Playwright browser first. One difference: CI runs the end-to-end tests against a production build (`next build`, then `next start`), the same build Vercel makes, so every page is ready before the tests start and a broken build fails CI. Your laptop uses the dev server, which builds each page on its first visit and shows detailed errors.
 
 - Results appear on the pull request page and in the repo's **Actions** tab. Failed end-to-end tests are listed with the file and line.
 - A pull request should only be merged when CI is green.

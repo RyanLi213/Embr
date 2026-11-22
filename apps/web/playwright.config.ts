@@ -28,10 +28,12 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: "pnpm dev",
+      // CI tests a production build, so every page is built before the tests
+      // start; locally the dev server builds each page on its first visit
+      command: process.env.CI ? "pnpm build && pnpm start" : "pnpm dev",
       url: WEB_URL,
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
+      timeout: 180_000,
     },
   ],
 });
