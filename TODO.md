@@ -18,8 +18,9 @@ request once CI passes.
     account, keys in Vercel and GitHub secrets, GitHub sign-in turned off
   - Left, in three parts: (1) API: `users` table, token check, `GET /v1/me`;
     (2) web: Profile with sign out, Community "coming soon", name in the
-    sidebar; (3) tests, and the Clerk keys passed to CI. Don't push the
-    branch until part 3, or CI fails.
+    sidebar; (3) tests, and the Clerk keys passed to CI. Pushing the branch
+    is fine; open the pull request only after part 3, since that is when CI
+    runs and its sign-in tests need the Clerk keys.
 - [ ] Next branch after sign-in: put the API and database online, so the live
   site saves accounts too
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
