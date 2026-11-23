@@ -9,23 +9,24 @@ Active tasks only. Finished tasks move to `DONE.md`.
 Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
-- [ ] Put the web app online right after `feature/home-screen` merges: a second
-  Vercel project with root directory `apps/web`. The API stays on the laptop
-  until accounts need it.
-- [ ] `feature/sign-in`: sign-up and sign-in with Clerk, in the Figma layout.
-  Each account is saved in our own database (a `users` table: Clerk ID, email,
-  name, sign-up time, last sign-in). Profile gets sign out. Community stays
-  locked when signed out, and shows a "coming soon" page once signed in.
+- [ ] Next branch after sign-in: put the API and database online, so the live
+  site saves accounts too
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
   database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
   for example a small flicker for low energy and a big bright flame for high.
 
-## Milestone 3: privacy and consent (agreed 2026-11-22)
+## Milestone 3: privacy, consent and a smoother site (agreed 2026-11-22)
+
+Starts after sign-in is done.
 
 - [ ] Privacy and consent. Embr is a prototype for now, so sign-in is built
   first, without this.
+- [ ] Make moving between pages smooth and optimized. Going to another page,
+  like Calendar, feels rigid right now; the site should feel high quality.
+  Ideas to look at: page transition animations, showing something straight
+  away while a page loads, and loading pages ahead of time.
 
 ## Check-in (agreed 2026-11-18, updated 2026-11-22)
 
@@ -57,9 +58,25 @@ Day colour on the calendar:
 
 ## Later
 
+- [ ] Add more ways to sign in: passkeys, Apple, Microsoft, Facebook and phone
+  (SMS), without making the sign-in form crowded. Details in `notes.md`
+  (2026-11-23).
 - [ ] Build our own authentication to replace Clerk, once Embr has real users.
   Until then, Clerk handles sign-in, and the API keeps its own `users` table
-  and a single login-check module, so the swap stays small.
+  and a single login-check module, so the swap stays small. It needs (details
+  in `notes.md`, 2026-11-22):
+  - Basics: db connection, accept data, validation, db talk, hashing, token
+    (JWT), cookies, middleware
+  - Structure: routing, API routing, MVC, modular, mail handling, env, Postman
+    collection and testing, debugging without ChatGPT
+  - Standards: Google Auth, OAuth2, OpenID Connect and OpenID standards, JWKS,
+    SAML, access token, refresh token
+- [ ] Maybe later: limit how many check-ins a guest keeps in the browser, to
+  encourage registering (`apps/web/src/lib/store-load-check-in.ts`). Not needed
+  for speed or storage (decided 2026-11-22, see `notes.md`), so no limit for
+  now.
+  - To weigh: a limit means a guest's calendar only shows the days kept, and
+    only those move into their account when they sign up.
 
 ## Guests and accounts (agreed 2026-11-14)
 

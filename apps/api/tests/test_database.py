@@ -1,34 +1,13 @@
 """Integration tests against a real, throwaway Postgres started in Docker."""
 
 import asyncio
-from collections.abc import Iterator
-from pathlib import Path
 
-import pytest
-from alembic import command
-from alembic.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
-from testcontainers.community.postgres import PostgresContainer
 
 from embr_api.core.config import Settings
 from embr_api.main import create_app
-
-API_ROOT = Path(__file__).resolve().parents[1]
-
-
-@pytest.fixture(scope="module")
-def database_url() -> Iterator[str]:
-    """Start Postgres with pgvector, apply every migration, then throw it away."""
-    with PostgresContainer("pgvector/pgvector:pg17", driver="asyncpg") as postgres:
-        url = postgres.get_connection_url()
-
-        alembic_config = Config(str(API_ROOT / "alembic.ini"))
-        alembic_config.set_main_option("sqlalchemy.url", url)
-        command.upgrade(alembic_config, "head")
-
-        yield url
 
 
 def test_health_reports_the_database_as_connected(database_url: str) -> None:
@@ -51,3 +30,29 @@ def test_migrations_enable_pgvector(database_url: str) -> None:
         return names
 
     assert "vector" in asyncio.run(installed_extensions())
+
+
+def test_migrations_create_users_with_a_unique_clerk_id(database_url: str) -> None:
+    async def users_table() -> tuple[list[str], list[str]]:
+        engine = create_async_engine(database_url)
+        async with engine.connect() as connection:
+            columns = await connection.execute(
+                text(
+                    "SELECT column_name FROM information_schema.columns"
+                    " WHERE table_name = 'users' ORDER BY ordinal_position"
+                )
+            )
+            unique = await connection.execute(
+                text(
+                    "SELECT constraint_name FROM information_schema.table_constraints"
+                    " WHERE table_name = 'users' AND constraint_type = 'UNIQUE'"
+                )
+            )
+            result = ([row[0] for row in columns], [row[0] for row in unique])
+        await engine.dispose()
+        return result
+
+    columns, unique = asyncio.run(users_table())
+
+    assert columns == ["id", "clerk_id", "email", "name", "phone", "created_at", "last_seen_at"]
+    assert unique == ["users_clerk_id_key"]

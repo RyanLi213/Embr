@@ -1,9 +1,11 @@
-import { ArrowRight, ChevronRight, Lock, Sun } from "lucide-react";
+import { ChevronRight, Lock, Sun } from "lucide-react";
 import Link from "next/link";
 
+import { AccountAvatar } from "@/components/account/account-avatar";
 import { Logo } from "@/components/brand/logo";
 import { Mascot } from "@/components/brand/mascot";
 import { ColourKey } from "@/components/check-in/colour-key";
+import { CommunityLink } from "@/components/home/community-link";
 import { Greeting } from "@/components/home/greeting";
 import { TodayCard } from "@/components/home/today-card";
 import { WeekStrip } from "@/components/home/week-strip";
@@ -18,13 +20,7 @@ export default function HomePage() {
       {/* Phones only: the sidebar is hidden there, so show the logo here */}
       <header className="mb-5 flex items-center justify-between md:hidden">
         <Logo className="origin-left scale-[0.86]" />
-        <Link
-          href="/profile"
-          aria-label="Open profile"
-          className="grid size-[43px] place-items-center rounded-full bg-[#ffe2c6] font-extrabold text-[#9f380f]"
-        >
-          G
-        </Link>
+        <AccountAvatar />
       </header>
 
       <section className="mb-3 flex min-h-[120px] max-w-[850px] items-center justify-between gap-4 md:mb-5 md:min-h-[155px]">
@@ -142,12 +138,7 @@ function MoreFromEmbr() {
             <p className="leading-[1.45] text-muted-foreground">
               A kind place to learn from people who understand the ups and downs.
             </p>
-            <Link
-              href="/sign-in"
-              className="mt-1 inline-flex min-h-12 items-center gap-2 font-extrabold text-link"
-            >
-              Sign in to unlock <ArrowRight aria-hidden className="size-[17px]" />
-            </Link>
+            <CommunityLink />
           </div>
         </article>
       </div>

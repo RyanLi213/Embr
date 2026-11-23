@@ -6,3 +6,4 @@ packages:
 allowBuilds:
   sharp: false
   unrs-resolver: false
+  core-js: false # comes with Clerk; its script only prints a donation message

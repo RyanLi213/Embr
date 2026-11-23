@@ -1,20 +1,30 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { WELCOMED_COOKIE } from "@/lib/welcome";
 
 /**
- * Runs on the server before the home page is sent. A first-time visitor has
- * not seen the welcome page yet, so they go there; everyone else gets the
- * home screen. (Later, Clerk's sign-in check will live in this file too.)
+ * A first-time visitor opening the home page hasn't seen the welcome page yet,
+ * so they go there first. Returns nothing when the page can carry on as normal.
  */
-export function proxy(request: NextRequest) {
-  if (!request.cookies.has(WELCOMED_COOKIE)) {
+export function welcomeRedirect(request: NextRequest): NextResponse | undefined {
+  if (request.nextUrl.pathname === "/" && !request.cookies.has(WELCOMED_COOKIE)) {
     return NextResponse.redirect(new URL("/welcome", request.url));
   }
-  return NextResponse.next();
+  return undefined;
 }
 
-// Only the home page needs this check
+/**
+ * Runs on the server before each page is sent. Clerk reads who is signed in
+ * (no page requires it: guests can use everything), then the welcome check.
+ */
+export default clerkMiddleware((_auth, request) => welcomeRedirect(request));
+
 export const config = {
-  matcher: "/",
+  matcher: [
+    // Every page, but not Next.js internals or files such as images and fonts
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always for API routes
+    "/(api|trpc)(.*)",
+  ],
 };

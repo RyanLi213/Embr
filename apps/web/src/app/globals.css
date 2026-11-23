@@ -1,6 +1,13 @@
+/*
+ * The order CSS layers win in, lowest first. Clerk's form styles go in "clerk",
+ * below Tailwind's utilities, so our classes can restyle Clerk's form.
+ */
+@layer theme, base, clerk, components, utilities;
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* Lets Clerk's sign-in forms use the same colours as the rest of Embr */
+@import "@clerk/ui/themes/shadcn.css";
 
 @custom-variant dark (&:is(.dark *));
 

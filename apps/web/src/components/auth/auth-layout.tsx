@@ -1,23 +1,17 @@
 import {
   ArrowLeft,
-  ArrowRight,
   RefreshCw,
   ShieldCheck,
   Sparkles,
   Users,
   type LucideIcon,
 } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Landscape } from "@/components/brand/landscape";
 import { Logo } from "@/components/brand/logo";
 import { Mascot } from "@/components/brand/mascot";
 import { Kicker } from "@/components/shell/page";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-export const metadata: Metadata = { title: "Sign in" };
 
 const BENEFITS: { icon: LucideIcon; text: string }[] = [
   { icon: RefreshCw, text: "Sync between phone and computer" },
@@ -26,8 +20,42 @@ const BENEFITS: { icon: LucideIcon; text: string }[] = [
   { icon: Users, text: "Join the community when it opens" },
 ];
 
-// A stand-in until sign-in with Clerk is built. Everything works without an account.
-export default function SignInPage() {
+/**
+ * Fits Clerk's form into our page: our heading replaces Clerk's, the form sits
+ * on the page instead of in a separate card, and buttons and fields are big
+ * and easy to press, like the rest of Embr. Colours come from the theme set in
+ * the root layout.
+ */
+export const FORM_APPEARANCE = {
+  elements: {
+    header: "hidden",
+    rootBox: "w-full",
+    cardBox: "w-full rounded-none border-0 shadow-none",
+    card: "bg-transparent p-0 shadow-none",
+    footer: "bg-transparent bg-none",
+    socialButtonsBlockButton: "h-12 text-base",
+    // Clerk's grey text is too faint to read easily (4.2:1); navy passes WCAG AA
+    socialButtonsBlockButtonText: "text-base font-bold text-foreground",
+    formFieldInput: "h-12 text-base",
+    formButtonPrimary: "h-12 text-base font-extrabold",
+  },
+  options: {
+    // Hide the orange "Development mode" stamp Clerk shows while we use its
+    // free test keys: visitors shouldn't see it, and its text is too faint to
+    // read. Developers still get Clerk's warning in the browser console.
+    unsafe_disableDevelopmentModeWarnings: true,
+  },
+};
+
+type AuthLayoutProps = {
+  title: string;
+  intro: string;
+  /** Clerk's sign-in or sign-up form */
+  children: React.ReactNode;
+};
+
+/** The sign-in and sign-up screens: why an account helps, then the form (from the Figma). */
+export function AuthLayout({ title, intro, children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen bg-[#fffdf9] md:grid md:grid-cols-[38%_62%] lg:grid-cols-[minmax(390px,43%)_1fr]">
       {/* Left (top on phones): why an account is worth having */}
@@ -50,7 +78,7 @@ export default function SignInPage() {
         <Landscape className="inset-[0_-10%] opacity-30 md:inset-[51%_-20%_-20%_-20%] md:opacity-70" />
       </section>
 
-      {/* Right (below on phones): the message */}
+      {/* Right (below on phones): the form */}
       <main className="px-[22px] pt-5 pb-12 md:px-[clamp(30px,7vw,100px)] md:py-9">
         <Link
           href="/"
@@ -58,21 +86,13 @@ export default function SignInPage() {
         >
           <ArrowLeft aria-hidden className="size-5" /> Back to Embr
         </Link>
-        <div className="mx-auto mt-6 max-w-[470px] md:mt-16">
-          <Kicker>Coming soon</Kicker>
+        <div className="mx-auto mt-6 max-w-[440px] md:mt-12">
+          <Kicker>Welcome</Kicker>
           <h1 className="my-2 text-[34px] leading-[1.12] font-extrabold tracking-[-0.035em] md:text-[39px]">
-            Accounts are on their way.
+            {title}
           </h1>
-          <p className="leading-[1.5] text-muted-foreground">
-            Soon you’ll be able to create a free account to keep your check-ins safe and use Embr
-            on your phone and computer.
-          </p>
-          <p className="mt-4 leading-[1.5] text-muted-foreground">
-            Until then, everything works without one. Your check-ins are saved in this browser.
-          </p>
-          <Link href="/" className={cn(buttonVariants({ size: "2xl" }), "mt-7 w-full")}>
-            Keep using Embr <ArrowRight aria-hidden />
-          </Link>
+          <p className="mb-6 leading-[1.5] text-muted-foreground">{intro}</p>
+          {children}
         </div>
       </main>
     </div>

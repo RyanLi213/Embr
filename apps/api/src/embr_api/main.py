@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from embr_api.core.config import Settings, get_settings
 from embr_api.core.database import create_engine, create_session_factory
-from embr_api.routes import health
+from embr_api.routes import health, me
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -36,6 +36,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     v1 = APIRouter(prefix="/v1")
     v1.include_router(health.router)
+    v1.include_router(me.router)
     app.include_router(v1)
 
     return app
