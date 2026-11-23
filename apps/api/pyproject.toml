@@ -8,6 +8,7 @@ dependencies = [
     "asyncpg>=0.32.0",
     "fastapi[standard]>=0.162.7",
     "pydantic-settings>=2.16.3",
+    "pyjwt[crypto]>=2.15.1",
     "sqlalchemy[asyncio]>=2.1.8",
 ]
 
@@ -48,3 +49,6 @@ addopts = "--cov=embr_api --cov-report=term-missing --cov-fail-under=90"
 [tool.coverage.run]
 branch = true
 source = ["embr_api"]
+# SQLAlchemy runs database calls in greenlets; without this, coverage misses
+# the lines that run after them
+concurrency = ["greenlet", "thread"]

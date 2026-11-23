@@ -15,8 +15,13 @@ class Settings(BaseSettings):
     # Default matches the local database in docker-compose.yml. Never a real secret.
     database_url: str = "postgresql+asyncpg://embr:embr@localhost:5432/embr"
 
-    # Web addresses allowed to call this API from a browser
+    # Web addresses allowed to call this API from a browser. Sign-in tokens
+    # must also have been made for one of these sites.
     cors_origins: list[str] = ["http://localhost:3000"]
+
+    # Our Clerk app's public address, which signs the sign-in tokens. Not a
+    # secret. Without it, sign-in endpoints answer 503 "not set up".
+    clerk_issuer: str | None = None
 
 
 @lru_cache
