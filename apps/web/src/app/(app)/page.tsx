@@ -1,12 +1,14 @@
-import { ArrowRight, ChevronRight, Lock, Sparkles, Sun } from "lucide-react";
+import { ArrowRight, ChevronRight, Lock, Sun } from "lucide-react";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
 import { Mascot } from "@/components/brand/mascot";
+import { DAY_DOT } from "@/components/check-in/day-colours";
 import { Greeting } from "@/components/home/greeting";
+import { TodayCard } from "@/components/home/today-card";
 import { WeekStrip } from "@/components/home/week-strip";
 import { Kicker, Page } from "@/components/shell/page";
-import { buttonVariants } from "@/components/ui/button";
+import { COLOUR_NAMES } from "@/lib/check-in-questions";
 
 const CARD = "rounded-[22px] border shadow-[0_6px_20px_rgb(55_36_21/0.035)]";
 
@@ -43,54 +45,6 @@ export default function HomePage() {
   );
 }
 
-/** The big card inviting today's check-in. */
-function TodayCard() {
-  return (
-    <section
-      aria-labelledby="today-heading"
-      className="relative flex min-h-[285px] items-start overflow-hidden rounded-[28px] border border-[#edc99e] bg-linear-120 from-[#ffe2bb] via-[#fff0d6] via-60% to-[#ffd8ae] px-[25px] py-[29px] shadow-[0_12px_35px_rgb(118_72_30/0.08)] md:items-center md:px-12 md:py-11"
-    >
-      {/* Soft decorative rings in the corner */}
-      <div
-        aria-hidden
-        className="absolute -top-[150px] -right-[60px] size-[350px] rounded-full border border-white/60"
-      />
-      <div
-        aria-hidden
-        className="absolute -top-[100px] right-2.5 size-[250px] rounded-full border border-white/60"
-      />
-
-      <div className="relative z-10 w-full max-w-[600px]">
-        <Kicker>Today’s check-in</Kicker>
-        <h2
-          id="today-heading"
-          className="mt-2 mb-2 max-w-[560px] text-[29px] leading-[1.1] font-extrabold tracking-[-0.025em] md:text-[clamp(28px,3vw,38px)]"
-        >
-          Take a moment for you
-        </h2>
-        <p className="mb-6 max-w-[550px] text-base leading-[1.55] text-muted-foreground md:text-[17px]">
-          A few gentle questions to help you notice how your body is feeling.
-        </p>
-        <div className="flex flex-col items-stretch gap-2.5 md:flex-row md:items-center md:gap-4">
-          <Link href="/check-in" className={buttonVariants({ size: "xl" })}>
-            Start today’s check-in <ArrowRight aria-hidden />
-          </Link>
-          <span className="text-center text-[13px] font-semibold text-[#725d50]">
-            Usually takes less than 30 seconds
-          </span>
-        </div>
-      </div>
-
-      <div
-        aria-hidden
-        className="absolute top-1/2 right-[10%] hidden size-[104px] -translate-y-1/2 place-items-center rounded-full bg-white/65 text-ember shadow-[0_0_0_20px_rgb(255_255_255/0.18),0_0_0_41px_rgb(255_255_255/0.11)] md:grid"
-      >
-        <Sparkles className="size-[34px]" />
-      </div>
-    </section>
-  );
-}
-
 /** This week's seven days. They fill with colour as check-ins are saved. */
 function WeekPanel() {
   return (
@@ -117,19 +71,16 @@ function WeekPanel() {
       <WeekStrip />
 
       <p className="mt-5 text-sm text-muted-foreground">Check in each day to colour your week.</p>
-      <ul aria-label="Colour key" className="mt-2 flex gap-5 text-xs font-bold text-muted-foreground">
-        <li className="flex items-center gap-1.5">
-          <span aria-hidden className="size-2 rounded-full bg-day-good" />
-          Good
-        </li>
-        <li className="flex items-center gap-1.5">
-          <span aria-hidden className="size-2 rounded-full bg-day-okay" />
-          Okay
-        </li>
-        <li className="flex items-center gap-1.5">
-          <span aria-hidden className="size-2 rounded-full bg-day-hard" />
-          Hard
-        </li>
+      <ul
+        aria-label="Colour key"
+        className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs font-bold text-muted-foreground"
+      >
+        {(["good", "okay", "hard", "flare"] as const).map((colour) => (
+          <li key={colour} className="flex items-center gap-1.5">
+            <span aria-hidden className={`size-2 rounded-full ${DAY_DOT[colour]}`} />
+            {COLOUR_NAMES[colour]}
+          </li>
+        ))}
       </ul>
     </section>
   );

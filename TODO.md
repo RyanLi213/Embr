@@ -12,23 +12,35 @@ request once CI passes.
 - [ ] Put the web app online right after `feature/home-screen` merges: a second
   Vercel project with root directory `apps/web`. The API stays on the laptop
   until accounts need it.
-- [ ] `feature/guest-check-in`: check-in flow saved in the browser, home "done"
-  state and week strip. Ryan writes the check-in tests first (test-first),
-  with teaching.
 - [ ] `feature/calendar`: month calendar from real check-ins, with day details
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
-  a placeholder until then)
+  a placeholder until then). Then the mascot also shows each check-in answer,
+  for example a small flicker for low energy and a big bright flame for high.
 
-## Check-in (agreed 2026-11-18)
+## Check-in (agreed 2026-11-18, updated 2026-11-22)
 
-Five questions, each answered 1 to 5: pain, stiffness, fatigue, mood, and "How
-was today overall?" Then "Is today a flare day?" (yes or no) and an optional
-note (up to 240 characters).
+Five questions, each on a 5-step scale saved as 1 (lowest) to 5 (highest):
+pain, stiffness, energy, mood, and "How was today overall?" Then "Is today a
+flare day?" (yes or no) and an optional note (up to 240 characters).
+
+- No answer is picked in advance: Continue stays off until one is tapped.
+- Buttons show words, not numbers ("Embr's glow"), lowest to highest:
+
+| Question | Answers |
+| --- | --- |
+| Pain | Not there · A whisper · Noticeable · Loud · Overwhelming |
+| Stiffness | Moving freely · A little tight · Stiff · Very stiff · Locked up |
+| Energy | Barely a flicker · Low glow · Steady flame · Burning bright · Fully lit |
+| Mood | Heavy · A bit grey · Steady · Light · Glowing |
+| Overall | A tough one · Rough edges · Getting by · A good day · A great day |
+
+- Opening the check-in again after finishing shows today's answers, with a
+  "Change answers" button.
 
 Day colour on the calendar:
 
-1. Turn each answer into a 1 to 5 "how good" score. Pain, stiffness and fatigue
-   are flipped (6 minus the answer); mood and overall stay as they are.
+1. Turn each answer into a 1 to 5 "how good" score. Pain and stiffness are
+   flipped (6 minus the answer); energy, mood and overall stay as they are.
 2. Take a weighted average: overall counts 1.5 times, the other four once each.
 3. 3.5 or higher is Good, 2.5 up to 3.5 is Okay, below 2.5 is Hard.
 4. A flare day shows as Flare, whatever the score.
