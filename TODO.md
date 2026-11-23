@@ -9,9 +9,6 @@ Active tasks only. Finished tasks move to `DONE.md`.
 Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
-- [ ] Put the web app online right after `feature/home-screen` merges: a second
-  Vercel project with root directory `apps/web`. The API stays on the laptop
-  until accounts need it.
 - [ ] `feature/sign-in`: sign-up and sign-in with Clerk, in the Figma layout.
   Each account is saved in our own database (a `users` table: Clerk ID, email,
   name, sign-up time, last sign-in). Profile gets sign out. Community stays
