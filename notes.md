@@ -2,6 +2,22 @@
 
 Ryan's thoughts and decisions, newest first.
 
+## 2026-11-23: More ways to sign in (later)
+
+I want to add all of these, but too many buttons will make the sign-in form
+crowded, so we need a way to offer them without that. For now: email code and
+Google (GitHub turned off).
+
+| Way | Why it fits Embr | Cost (Clerk) |
+| --- | --- | --- |
+| Passkeys (fingerprint or face) | No typing at all after the first time, good for sore hands | free |
+| Apple | Lots of people have iPhones; the App Store requires it for the iPhone app if we offer Google | free |
+| Microsoft | Common account among older adults | free |
+| Facebook | Common account among older adults | free |
+| Phone (SMS code) | Familiar for everyone | free while testing, paid once live; only US and Canada by default |
+
+WhatsApp: Clerk doesn't offer it.
+
 ## 2026-11-22: No limit on check-ins in the browser (decided)
 
 Check-ins barely affect memory or storage, so we don't need a limit. Measured:
