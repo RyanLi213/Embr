@@ -2,6 +2,38 @@
 
 Ryan's thoughts and decisions, newest first.
 
+## 2026-11-23: Putting the API online (decided)
+
+What "online" means: three pieces. The web app is already on Vercel; the API
+needs a computer on the internet to run on (with `https://`), and the database
+needs to run online too. Then Vercel is told the API's address.
+
+- **Hosting: option B, AWS Lambda for the API + Neon for the database.**
+  About $0 a month at our size, and still AWS, Terraform and automatic deploys
+  for the resume. Option A (AWS ECS + RDS, always running) would cost about
+  $30–50 a month after credits, mostly the load balancer and network gateway,
+  for an app nobody outside the team uses yet. Option C (simple hosts) teaches
+  the least.
+- **Lambda vs ECS:** Lambda runs only when called, pays per request, gives a
+  free `https://` address, but the first request after a quiet spell waits
+  1–3 seconds (a "cold start"). ECS is a container that always runs, pays per
+  hour, needs a load balancer, never waits. Start on Lambda; move to ECS with
+  real users. The Lambda Web Adapter lets the same Docker image run on both.
+- **Database:** Neon now (free). AWS RDS (about $15 a month for the smallest)
+  or Aurora once the user base scales: both are normal Postgres, so moving is
+  a copy-and-restore, and only the database address setting changes.
+- **Kubernetes:** not now (about $73 a month on AWS just for Kubernetes itself,
+  and a lot to look after for one container). Later, with many services and a
+  team. It can be learned for free on the laptop (`kind` or `minikube`).
+- **Region:** AWS US East 1 (N. Virginia) for both. Where health data must be
+  stored (for example in Canada) is a Milestone 3 privacy question.
+- **Postgres 18** everywhere: Neon's default, so the laptop and CI moved to 18
+  to match. Running migrations twice is safe: Alembic only runs newer ones.
+- **Accounts:** an AWS Builder ID is not an AWS account. The AWS account is on
+  the Free plan ($100 credits, ends 2027-05-23). AWS asked for ID and a card
+  statement to verify the new account (sent 2026-11-23). Only upload documents
+  through the AWS console itself, never through a link in an email.
+
 ## 2026-11-23: The API's routes: /v1/health and /v1/me
 
 A **route** is one address on the API plus the code that answers it, like a

@@ -12,11 +12,32 @@ request once CI passes.
 - [ ] `feature/api-online`: put the API and database online, so the live site
   saves accounts too. Plan: Neon for Postgres, AWS Lambda for the API, both in
   US East 1, set up with Terraform and deployed by GitHub Actions.
-  - Done (2026-11-23): Neon project (Postgres 18, US East 1) with both
-    migrations applied; the API accepts Neon's address as handed out; laptop
-    and CI moved to Postgres 18 to match
-  - Waiting on AWS's account review: budget alert, everyday login, CLI and
-    Terraform, then Lambda, automatic deploys, and Vercel pointed at the API
+  - Done (2026-11-23, committed on the branch, not pushed yet): Neon project
+    (Postgres 18, US East 1) with both migrations applied; the API accepts
+    Neon's address as handed out; laptop and CI moved to Postgres 18 to match;
+    AWS account made with MFA on root; AWS CLI and Terraform installed
+  - Now: push the branch and merge this part as a small pull request
+  - Waiting on AWS's account review (documents sent 2026-11-23), then in order:
+    1. Budget alert: $5 a month, started from AWS's "Explore AWS" activity
+       so it earns $20
+    2. Everyday login (IAM Identity Center user) and the CLI signed in with
+       it, so the root login stays locked away
+    3. Terraform in a new `infra/` folder: image storage (ECR), the Lambda
+       function with a function URL, logs kept 14 days, a role GitHub Actions
+       can deploy with (OIDC, no stored AWS keys), Terraform state stored in
+       AWS (S3)
+    4. Dockerfile: add the Lambda Web Adapter (one line; the same image still
+       runs anywhere)
+    5. GitHub Actions deploy workflow, after CI passes on `main`: build the
+       image, push it to ECR, run migrations on Neon, update Lambda, check
+       `/v1/health`. Neon's address goes in a GitHub secret
+    6. Online API settings: `EMBR_DATABASE_URL`, `EMBR_CLERK_ISSUER`,
+       `EMBR_CORS_ORIGINS=["https://embr-lovat.vercel.app"]`,
+       `EMBR_ENVIRONMENT=production`
+    7. Vercel: set `NEXT_PUBLIC_API_URL` to the function URL, redeploy, then
+       sign in on the live site and check a row appears in Neon
+    8. `docs/deploy.md` (how it deploys, how to roll back), tests, and the
+       `AGENTS.md` update (shown to Ryan first)
 - [ ] Before 2027-05-23: upgrade the AWS account from the Free plan (or move
   the API), or AWS switches off everything when the free period or the
   credits run out. Credits: $100, plus up to $100 more from AWS's "Explore
