@@ -37,7 +37,7 @@ It is a script in the root `package.json`. It chains eight commands with `&&`, w
 | 5 | `pnpm --filter @embr/web test:coverage` | Web unit tests; coverage 90% minimum | under 30 s |
 | 6 | `pnpm db:up` | Starts the local database in Docker (needed by step 8) | seconds |
 | 7 | `pnpm db:migrate` | Brings the database's tables up to date | seconds |
-| 8 | `pnpm test:e2e` | A real browser clicks through the real app, and every page is checked for accessibility | about 1 min |
+| 8 | `pnpm test:e2e` | A real browser clicks through the real app, and every page is checked for accessibility. Needs Clerk's keys: `apps/web/.env.local` on your laptop, the repo's Actions secrets in CI | about 1 min |
 
 **Why fastest first:** a typo found by lint in 5 seconds should not wait behind a minute of browser tests. **Why stop at the first failure:** once something is broken, the later results are not worth waiting for. Fix it and run again.
 
@@ -147,7 +147,9 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 
 ## Every test, and what it protects
 
-**189 tests in total**: 161 web unit, 8 API, 20 end-to-end.
+**238 tests in total**: 192 web unit, 23 API, 23 end-to-end.
+
+Web unit tests never contact Clerk: `src/test/clerk.tsx` is a fake Clerk that starts every test signed out, and `signInAs()` signs in a made-up person.
 
 ### Web unit tests (Vitest), `apps/web/src/`
 
@@ -164,12 +166,15 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 | `components/check-in/check-in-flow.test.tsx` | 10 | Nothing is picked at first and Continue is off; picking turns it on; focus moves to each new question for screen readers; Back keeps answers; the flare question and note come after the five; finishing saves every answer; the note stops at 240; a failed save explains and keeps the answers; changing answers starts from the saved ones; Back from the first question |
 | `components/check-in/check-in-screen.test.tsx` | 6 | No check-in today starts the flow (yesterday's doesn't count); finishing shows the thank-you; an existing check-in shows today's answers and can be changed; coming back after finishing shows the answers, not the thank-you again (a bug the end-to-end test found); nothing shows on the server |
 | `components/home/today-card.test.tsx` | 3 | The card invites a check-in, or shows today as done with its summary; it stays hidden on the server instead of flashing the wrong card |
-| `proxy.test.ts` | 3 | A first-time visitor is sent to `/welcome`; a welcomed visitor sees home; the check only runs on `/` |
+| `proxy.test.ts` | 5 | A first-time visitor opening home is sent to `/welcome`; a welcomed visitor sees home; other pages are never redirected; the proxy runs on every page (so Clerk knows who is signed in) but skips images and Next.js's own files |
 | `components/api-status.test.tsx` | 5 | The status message for loading, connected, database down, API unreachable, and API error |
 | `components/home/greeting.test.tsx` | 3 | Greets by time of day with today's date; changes when the hour turns without a reload; starts hidden on the server, which can't know the visitor's time |
 | `components/home/week-strip.test.tsx` | 3 | Shows this week from Monday with today marked and described for screen readers; colours each day by its check-in (good, flare, hard); shows plain dots on the server |
 | `components/brand/brand.test.tsx` | 4 | The logo links home and is read as "embr"; the decorative mascot is hidden from screen readers; the mascot keeps its shape; the landscape is hidden from screen readers |
-| `components/shell/app-nav.test.tsx` | 6 | Which menu item counts as current; the sidebar links to every page and marks the current one; Community is read as needing an account; the guest card; the phone menu marks the current page |
+| `components/shell/app-nav.test.tsx` | 9 | Which menu item counts as current; the sidebar links to every page and marks the current one; Community is read as needing an account; the guest card; once signed in, the card shows the person (or their email) and Community unlocks; nothing flashes while Clerk starts; the phone menu marks the current page |
+| `lib/use-account.test.ts` | 8 | Loading, guest or signed in; the person's name, email, phone and initial (from the email, or "?", when there's no name); the API is only called where it can be reached: always on the laptop, from the live site only once its address is set |
+| `components/account/save-account.test.tsx` | 5 | After sign-in the app tells our API who signed in (`GET /v1/me`) with Clerk's token; once per sign-in, not on every page; nothing for guests or without a token; the app keeps working when the API can't be reached |
+| `components/account/account-screens.test.tsx` | 13 | Profile: guests are invited to sign in; signed in it shows name, email and phone, leaves out missing details, and signs out; Community: locked for guests, "coming soon" once signed in; the guest banner stops offering an account once signed in; the phone avatar and home's Community link change once signed in; screens wait for Clerk instead of flashing the wrong page |
 | `components/coming-soon.test.tsx` | 3 | The message is the page's main heading with a way onward; the lock and note appear only when asked |
 
 ### API tests (pytest), `apps/api/tests/`
@@ -178,7 +183,9 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 | --- | --- | --- |
 | `test_health.py` | 2 | `/v1/health` still answers when the database is down (reports "degraded"); unversioned paths like `/health` don't exist |
 | `test_cors.py` | 4 | The browser may call the API from the web app's address, including the browser's "may I?" preflight request; other websites are blocked; a typo in the default setting is caught |
-| `test_database.py` | 2 | **Integration**, with a real Postgres: health reports the database as connected; the migrations switch on pgvector |
+| `test_auth.py` | 10 | The sign-in token check, with a made-up signing key (no internet): a valid token says who is signed in; expired, wrong-Clerk-app, wrong-website, no-website, no-person and forged tokens are all refused; `/v1/me` answers 401 without a valid token and never says which check failed; 503 when sign-in isn't set up; the real checker uses our Clerk app and websites and is reused |
+| `test_database.py` | 3 | **Integration**, with a real Postgres: health reports the database as connected; the migrations switch on pgvector and create the `users` table with a unique Clerk ID |
+| `test_me.py` | 4 | **Integration**, `GET /v1/me` with a real Postgres: the first visit saves the person; later visits update the same row (new email, phone, last seen) without a duplicate; two people get two rows; nothing is saved without a valid token |
 
 ### End-to-end tests (Playwright), `apps/web/e2e/`
 
@@ -186,7 +193,8 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 | --- | --- | --- |
 | `status.spec.ts` | 1 | The whole chain works: browser → web app → API → database → back to the page |
 | `first-visit.spec.ts` | 2 | A new guest is welcomed once, can start a check-in without an account, and sees the home screen on later visits; the menu reaches each page |
-| `accessibility.spec.ts` | 14 | Every page (welcome, home, check-in, calendar, community, profile, sign-in) meets WCAG 2.1 AA, at computer and phone size |
+| `accessibility.spec.ts` | 16 | Every page (welcome, home, check-in, calendar, community, profile, sign-in, sign-up) meets WCAG 2.1 AA, at computer and phone size. The sign-in pages are checked after Clerk's form has loaded (this found two contrast problems in it) |
+| `sign-in.spec.ts` | 1 | With a Clerk test account: signing in makes the app call `/v1/me`, our API checks the token and saves the person (200, with their email and name); the sidebar shows them, Community unlocks, Profile shows the account and meets WCAG 2.1 AA, and signing out returns to guest |
 | `calendar.spec.ts` | 2 | With made-up check-ins and the clock fixed on a known day: the month shows each day's colour, a tapped day shows its answers and note, months go back and forward, and today's empty day leads to the check-in; meets WCAG 2.1 AA with coloured days and with a day open. On a phone, a tapped day's details scroll into view |
 | `check-in.spec.ts` | 1 | A guest's whole check-in: Continue starts off, every question, flare, note, the thank-you; home then shows today as done and coloured; the answers can be viewed and changed, and survive a reload. Each check-in screen also meets WCAG 2.1 AA |
 
@@ -197,9 +205,9 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 The common model is the **test pyramid**: many fast unit tests at the bottom, fewer integration tests in the middle, and a few slow end-to-end tests at the top. Google describes the same idea as small, medium and large tests, and is often quoted as aiming for roughly 70% / 20% / 10%.
 
 ```
-        /\       end-to-end: few, slow, the most realistic      20
-       /  \      integration: several real pieces together       2 (+ api-status)
-      /____\     unit: many, fast, precise                     167
+        /\       end-to-end: few, slow, the most realistic      23
+       /  \      integration: several real pieces together       7 (+ api-status)
+      /____\     unit: many, fast, precise                     208
     __________
     static: lint, type check, API contract (the "testing trophy" base)
 ```
