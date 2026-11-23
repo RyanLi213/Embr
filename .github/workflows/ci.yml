@@ -77,6 +77,13 @@ jobs:
 
       - name: End-to-end test
         run: pnpm test:e2e
+        env:
+          # Clerk's keys, from the repo's Actions secrets: the web app needs them
+          # to show the sign-in pages and know who is signed in
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          # Our Clerk app's public address, so the API can check sign-in tokens (not a secret)
+          EMBR_CLERK_ISSUER: https://positive-dane-4610.clerk.accounts.dev
 
       - name: Save the Playwright report if the end-to-end test failed
         if: failure()

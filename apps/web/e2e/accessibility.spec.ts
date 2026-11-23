@@ -1,15 +1,17 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-// Every page, with the main heading to wait for before checking it
-const PAGES: { path: string; heading: string | RegExp }[] = [
+// Every page, with the main heading to wait for before checking it. Sign-in
+// pages also wait for Clerk's form, which loads from Clerk after the page.
+const PAGES: { path: string; heading: string | RegExp; form?: boolean }[] = [
   { path: "/welcome", heading: "Meet each day with a little more ease." },
   { path: "/", heading: /^Good (morning|afternoon|evening), friend\.$/ },
   { path: "/check-in", heading: "How is your pain today?" },
   { path: "/calendar", heading: "Calendar" },
   { path: "/community", heading: "You shouldn’t have to do this alone." },
   { path: "/profile", heading: "Take Embr with you." },
-  { path: "/sign-in", heading: "Accounts are on their way." },
+  { path: "/sign-in", heading: "Welcome back.", form: true },
+  { path: "/sign-up", heading: "Keep your good days close.", form: true },
 ];
 
 // The layout changes between computers and phones, so check both
@@ -26,11 +28,12 @@ test.beforeEach(async ({ context, page, baseURL }) => {
 });
 
 for (const screen of SCREENS) {
-  for (const { path, heading } of PAGES) {
+  for (const { path, heading, form } of PAGES) {
     test(`${path} meets accessibility rules on a ${screen.name}`, async ({ page }) => {
       await page.setViewportSize(screen);
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+      if (form) await expect(page.getByLabel("Email address")).toBeVisible();
 
       // axe checks the page against the WCAG 2.1 AA accessibility rules:
       // contrast, labels, headings, keyboard access and more

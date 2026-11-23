@@ -10,6 +10,8 @@ const API_URL = "http://localhost:8000";
  */
 export default defineConfig({
   testDir: "./e2e",
+  // Gets a Clerk testing token once, so the sign-in test can sign in
+  globalSetup: "./e2e/global-setup.ts",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
 
