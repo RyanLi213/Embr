@@ -2,6 +2,65 @@
 
 Ryan's thoughts and decisions, newest first.
 
+## 2026-11-23: The API's routes: /v1/health and /v1/me
+
+A **route** is one address on the API plus the code that answers it, like a
+window at a counter that answers one kind of question.
+
+| | `GET /v1/health` | `GET /v1/me` |
+| --- | --- | --- |
+| Question | "Are you alive?" | "Who am I? Remember me." |
+| Sign-in needed | no | yes (Clerk token) |
+| What it does | checks the API runs and can reach the database | checks the token, saves or updates me in `users`, answers my record |
+| Answer | `{"status": "ok", "database": "connected", ...}` | `{"id": ..., "email": ..., "name": ..., "last_seen_at": ...}` |
+| Who uses it | `/status` page, the tests, later the hosting service (to notice if the API dies) | the web app, once each time I open it signed in |
+| Code | `routes/health.py` | `routes/me.py` |
+| Built | Milestone 1 | sign-in branch |
+
+Try them: http://localhost:8000/v1/health shows the answer. Opening
+http://localhost:8000/v1/me in the browser gives 401, because a typed address
+has no token: the check working.
+
+**Calling it "me" is industry practice** (the "current user" endpoint): Spotify
+`GET /v1/me`, Microsoft Graph `GET /me`, Facebook/Meta Graph `GET /me`, X
+`GET /2/users/me`, Google People API `people/me`, GitHub `GET /user` (same
+idea, different name). No ID in the address; the token decides who you are.
+What matters is using one style consistently.
+
+### How GET /v1/me works
+
+- **v1** = version 1 of our API. Every address starts with it. If we ever have to
+  change an answer in a way that breaks apps people already have, we make
+  `/v2/...` and keep `/v1/...` working.
+- **me** = "the person asking". There's no ID in the address, so nobody can see
+  someone else's data by changing a number. The Clerk token decides who "me" is.
+
+What happens, step by step:
+
+1. **Web app** (`apps/web/src/components/account/save-account.tsx`), once per
+   sign-in session: asks Clerk for the token (`getToken()`), then calls
+   `GET /v1/me` with the header `Authorization: Bearer <token>`. It sits in the
+   app layout, so it runs whatever page you open.
+2. **Route** (`apps/api/src/embr_api/routes/me.py`): the door. It needs two things
+   before it runs: a signed-in person (`Depends(get_signed_in_person)`) and a
+   database session (`Depends(get_session)`).
+3. **Token check** (`apps/api/src/embr_api/core/auth.py`): no token gives 401.
+   Otherwise it checks Clerk's signature with Clerk's public key, that it hasn't
+   expired, that it's from our Clerk app, and that it was made for our website.
+   Any fail gives 401 "Sign in to continue." Pass: it reads who it is (Clerk ID,
+   email, name, phone).
+4. **Service** (`services/users.py`): the rule "save the person, then commit".
+5. **Repository** (`repositories/users.py`): one SQL statement, "insert, or update
+   if this Clerk ID is already there" (`INSERT ... ON CONFLICT`). First visit
+   makes a new row; later visits update the details and `last_seen_at`. Never a
+   duplicate.
+6. **Answer**: 200 with the saved record (id, email, name, phone, created_at,
+   last_seen_at), shaped by `schemas/user.py`.
+
+In the API terminal it shows as `"GET /v1/me HTTP/1.1" 200` (passed) or `401`
+(token refused, nothing saved). The `OPTIONS /v1/me` line before it is the
+browser asking "may this site send this?" first.
+
 ## 2026-11-23: The users table (built)
 
 Our own record of everyone who signs in, in Postgres (migration `0002`).
