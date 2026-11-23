@@ -1,3 +1,4 @@
+import { SaveAccount } from "@/components/account/save-account";
 import { BottomNav, Sidebar } from "@/components/shell/app-nav";
 
 /**
@@ -19,6 +20,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <BottomNav />
+      <SaveAccount />
     </>
   );
 }
