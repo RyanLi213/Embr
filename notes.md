@@ -2,6 +2,57 @@
 
 Ryan's thoughts and decisions, newest first.
 
+## 2026-11-22: No limit on check-ins in the browser (decided)
+
+Check-ins barely affect memory or storage, so we don't need a limit. Measured:
+a year of check-ins is 41 KB (126 KB if every note is full) and loads in about
+1 ms; 10 years is up to 1.3 MB and about 7 ms. A browser allows about 5 MB per
+site.
+
+Maybe later: a limit on check-ins for guests, to incentivize registering.
+
+## 2026-11-22: What building our own auth needs (later)
+
+Eventually we build our own authentication to replace Clerk. It needs all of
+these (from a course outline I saw). In Embr, "express" means FastAPI.
+
+**Basics: how a backend handles a login**
+
+| Part | What it is |
+| --- | --- |
+| db connection | The API talking to the database |
+| accept data | Taking in what the person sends (email, password) |
+| validation | Checking it follows the rules before using it |
+| db -> talk | Reading and saving users in the database |
+| hashing | Storing passwords scrambled one way, never as plain text |
+| token => JWT | A signed pass that proves who you are on each request |
+| cookies | Where the browser keeps the pass between pages |
+| middleware | Code that runs before every route, for example "is this person signed in?" |
+
+**Structure: how the backend is organized**
+
+| Part | What it is |
+| --- | --- |
+| routing, API routing | Which code answers which address, like `/v1/me` |
+| MVC, modular | Keeping routes, logic and database code apart (our layered backend) |
+| mail handling | Sending emails: confirm your address, reset your password |
+| env | Secrets kept in `.env`, never in the code |
+| Postman collection/testing | Saved API requests to try by hand |
+| express | The backend framework (ours is FastAPI) |
+| debugging (without ChatGPT) | Finding bugs myself |
+
+**Standards: signing in the way big apps do**
+
+| Part | What it is |
+| --- | --- |
+| Google Auth | "Sign in with Google" |
+| OAuth2 | The standard for letting one app sign you in to another |
+| OpenID Connect, OpenID standards | Adds "who you are" on top of OAuth2 |
+| JWKS (not JWT) | The public keys used to check a JWT is real |
+| SAML | An older standard, used by schools and companies |
+| access token | Short-lived pass used on each request |
+| refresh token | Longer-lived pass used to get a new access token |
+
 ## 2026-11-22: Kinds of tests (to remember)
 
 Most test names are about how much of the app one test runs at once. From

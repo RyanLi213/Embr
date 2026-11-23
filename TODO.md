@@ -59,7 +59,20 @@ Day colour on the calendar:
 
 - [ ] Build our own authentication to replace Clerk, once Embr has real users.
   Until then, Clerk handles sign-in, and the API keeps its own `users` table
-  and a single login-check module, so the swap stays small.
+  and a single login-check module, so the swap stays small. It needs (details
+  in `notes.md`, 2026-11-22):
+  - Basics: db connection, accept data, validation, db talk, hashing, token
+    (JWT), cookies, middleware
+  - Structure: routing, API routing, MVC, modular, mail handling, env, Postman
+    collection and testing, debugging without ChatGPT
+  - Standards: Google Auth, OAuth2, OpenID Connect and OpenID standards, JWKS,
+    SAML, access token, refresh token
+- [ ] Maybe later: limit how many check-ins a guest keeps in the browser, to
+  encourage registering (`apps/web/src/lib/store-load-check-in.ts`). Not needed
+  for speed or storage (decided 2026-11-22, see `notes.md`), so no limit for
+  now.
+  - To weigh: a limit means a guest's calendar only shows the days kept, and
+    only those move into their account when they sign up.
 
 ## Guests and accounts (agreed 2026-11-14)
 
