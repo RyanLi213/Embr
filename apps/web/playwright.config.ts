@@ -12,6 +12,12 @@ export default defineConfig({
   testDir: "./e2e",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+
+  // locally the dev server compiles the pages while tests run, very slow when several tests start at once, give each test more time
+  // CI keeps normal limits, its pages are built before tests are run
+  timeout: process.env.CI ? 30_000: 90_000,
+  expect: { timeout: process.env.CI ? 5_000: 15_000},
+
   // In CI, also write an HTML report; ci.yml saves it when a test fails
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
