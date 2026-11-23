@@ -31,6 +31,8 @@ export default defineConfig({
       // CI tests a production build, so every page is built before the tests
       // start; locally the dev server builds each page on its first visit
       command: process.env.CI ? "pnpm build && pnpm start" : "pnpm dev",
+      // Make crashes in the CI log point to our source files, not built ones
+      env: process.env.CI ? { NODE_OPTIONS: "--enable-source-maps" } : undefined,
       url: WEB_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
