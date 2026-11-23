@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/ui/themes";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
@@ -18,7 +20,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${nunito.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {/*
+          Clerk handles accounts. Every page can ask who is signed in, and
+          Clerk's forms use Embr's colours through the shadcn theme.
+        */}
+        <ClerkProvider
+          appearance={{ theme: shadcn, cssLayerName: "clerk" }}
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
+          afterSignOutUrl="/"
+        >
+          {children}
+        </ClerkProvider>
+      </body>
     </html>
   );
 }

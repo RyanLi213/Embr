@@ -6,26 +6,38 @@ import {
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
 
-import { config, proxy } from "./proxy";
+import { config, welcomeRedirect } from "./proxy";
 
-const HOME = "http://localhost:3000/";
+const SITE = "http://localhost:3000";
+const WELCOMED = { headers: { cookie: "embr-welcomed=yes" } };
 
-describe("proxy", () => {
+describe("welcomeRedirect", () => {
   it("sends a first-time visitor to the welcome page", () => {
-    const response = proxy(new NextRequest(HOME));
+    const response = welcomeRedirect(new NextRequest(`${SITE}/`));
 
-    expect(getRedirectUrl(response)).toBe("http://localhost:3000/welcome");
+    expect(response && getRedirectUrl(response)).toBe(`${SITE}/welcome`);
   });
 
   it("lets a visitor who has been welcomed see the home screen", () => {
-    const request = new NextRequest(HOME, { headers: { cookie: "embr-welcomed=yes" } });
-
-    expect(getRedirectUrl(proxy(request))).toBeNull();
+    expect(welcomeRedirect(new NextRequest(`${SITE}/`, WELCOMED))).toBeUndefined();
   });
 
-  it("only runs for the home page", () => {
-    expect(unstable_doesMiddlewareMatch({ config, url: "/" })).toBe(true);
-    expect(unstable_doesMiddlewareMatch({ config, url: "/calendar" })).toBe(false);
-    expect(unstable_doesMiddlewareMatch({ config, url: "/welcome" })).toBe(false);
+  it("only sends people from the home page, so other links still work", () => {
+    expect(welcomeRedirect(new NextRequest(`${SITE}/calendar`))).toBeUndefined();
+    expect(welcomeRedirect(new NextRequest(`${SITE}/sign-in`))).toBeUndefined();
+  });
+});
+
+describe("proxy", () => {
+  it("runs on every page, so Clerk knows who is signed in everywhere", () => {
+    for (const url of ["/", "/calendar", "/sign-in", "/sign-in/factor-one", "/welcome"]) {
+      expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true);
+    }
+  });
+
+  it("skips images and Next.js's own files, which don't need it", () => {
+    for (const url of ["/embr/front.webp", "/icon.svg", "/_next/static/chunk.js"]) {
+      expect(unstable_doesMiddlewareMatch({ config, url })).toBe(false);
+    }
   });
 });
