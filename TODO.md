@@ -13,6 +13,9 @@ request once CI passes.
   Each account is saved in our own database (a `users` table: Clerk ID, email,
   name, sign-up time, last sign-in). Profile gets sign out. Community stays
   locked when signed out, and shows a "coming soon" page once signed in.
+  Saving accounts works on the laptop first (decided 2026-11-23).
+- [ ] Next branch after sign-in: put the API and database online, so the live
+  site saves accounts too
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
   database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
