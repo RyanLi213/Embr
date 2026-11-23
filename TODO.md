@@ -3,6 +3,12 @@
 Active tasks only. Finished tasks move to `DONE.md`.
 
 - [ ] Discuss the grand vision with Lisa and Leo
+- [ ] Email the Mount Sinai team behind the wearable RA flare study (medRxiv
+  preprint, 2025, doi 10.1101/2025.09.24.25336585; PMC12486041) to ask how the
+  research is going and whether flare prediction is getting close to being
+  proven, so Embr could support it later. Drafts written 2026-11-23: one to
+  Dr. Hirten (last author), one to Dr. Gulko (rheumatologist). Find their
+  emails on the paper first, and check PubMed for a published version.
 
 ## Milestone 2: screens from the Figma design (agreed 2026-11-18)
 
