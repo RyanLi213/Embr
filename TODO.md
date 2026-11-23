@@ -12,9 +12,6 @@ request once CI passes.
 - [ ] Put the web app online right after `feature/home-screen` merges: a second
   Vercel project with root directory `apps/web`. The API stays on the laptop
   until accounts need it.
-- [ ] `feature/guest-check-in`: check-in flow saved in the browser, home "done"
-  state and week strip. Ryan writes the check-in tests first (test-first),
-  with teaching.
 - [ ] `feature/calendar`: month calendar from real check-ins, with day details
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
