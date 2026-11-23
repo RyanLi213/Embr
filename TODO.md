@@ -15,6 +15,10 @@ request once CI passes.
   locked when signed out, and shows a "coming soon" page once signed in.
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
   database instead of only the browser
+- [ ] Make moving between pages smooth and optimized (added 2026-11-22).
+  Going to another page, like Calendar, feels rigid right now; the site should
+  feel high quality. Ideas to look at: page transition animations, showing
+  something straight away while a page loads, and loading pages ahead of time.
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
   for example a small flicker for low energy and a big bright flame for high.
