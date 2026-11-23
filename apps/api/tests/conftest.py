@@ -24,7 +24,8 @@ TEST_SITE = "http://localhost:3000"
 @pytest.fixture(scope="session")
 def database_url() -> Iterator[str]:
     """Start Postgres with pgvector, apply every migration, then throw it away."""
-    with PostgresContainer("pgvector/pgvector:pg17", driver="asyncpg") as postgres:
+    # The same Postgres version as Neon online, so tests prove what really runs there
+    with PostgresContainer("pgvector/pgvector:pg18", driver="asyncpg") as postgres:
         url = postgres.get_connection_url()
 
         alembic_config = Config(str(API_ROOT / "alembic.ini"))
