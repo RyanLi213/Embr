@@ -34,8 +34,16 @@ export const FORM_APPEARANCE = {
     card: "bg-transparent p-0 shadow-none",
     footer: "bg-transparent bg-none",
     socialButtonsBlockButton: "h-12 text-base",
+    // Clerk's grey text is too faint to read easily (4.2:1); navy passes WCAG AA
+    socialButtonsBlockButtonText: "text-base font-bold text-foreground",
     formFieldInput: "h-12 text-base",
     formButtonPrimary: "h-12 text-base font-extrabold",
+  },
+  options: {
+    // Hide the orange "Development mode" stamp Clerk shows while we use its
+    // free test keys: visitors shouldn't see it, and its text is too faint to
+    // read. Developers still get Clerk's warning in the browser console.
+    unsafe_disableDevelopmentModeWarnings: true,
   },
 };
 
