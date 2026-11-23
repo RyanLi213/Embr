@@ -147,7 +147,7 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 
 ## Every test, and what it protects
 
-**151 tests in total**: 125 web unit, 8 API, 18 end-to-end.
+**189 tests in total**: 161 web unit, 8 API, 20 end-to-end.
 
 ### Web unit tests (Vitest), `apps/web/src/`
 
@@ -158,6 +158,8 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 | `lib/check-in.test.ts` | 34 | **Day colour:** a typical day, the best, middle and worst answers, flare always wins, each answer counts the right way (pain and stiffness flipped, energy not), overall counts 1.5 times, and the closest scores either side of 3.5 and 2.5. **Rules (Zod):** answers must be whole numbers from 1 to 5, nothing missing, flare is yes or no, the note is 240 characters at most and trimmed, the date is a real YYYY-MM-DD day |
 | `lib/check-in-questions.test.ts` | 11 | The five questions come in order with five answers each; each saved number shows the right words; the one-line summary ("Pain was a whisper and your mood felt light.") at both ends of each scale and on a flare day |
 | `lib/store-load-check-in.test.ts` | 15 | Check-ins are saved by day, one per day, without losing other days; rule-breaking check-ins are refused; damaged or unreadable saved data is skipped instead of crashing; a browser that blocks storage is handled; listeners hear saves, including from another tab |
+| `lib/calendar.test.ts` | 23 | Months count from 1; moving between months, including across a new year and back more than a year; "November 2026"; a month starting on Sunday gets 6 empty squares and one starting on Monday none; 28, 29 (leap year) and 31-day months; a saved date in words; past, today and future; what a screen reader hears for each kind of day |
+| `components/calendar/calendar-view.test.tsx` | 13 | Opens on this month with today picked; each day's colour from its check-in, read out for screen readers; the heading for good, okay, hard and flare days; a tapped day shows its answers and note; the details scroll into view on phones; today links to its check-in, or offers "Check in now"; a past day with no check-in says so; future days can't be picked; back a month and forward again (the picked day is cleared), never past this month; nothing shows on the server |
 | `lib/use-check-ins.test.tsx` | 4 | Screens see saved check-ins and update straight after a save; the same object comes back while nothing changes (React needs this); blocked storage; nothing is known on the server |
 | `components/check-in/check-in-flow.test.tsx` | 10 | Nothing is picked at first and Continue is off; picking turns it on; focus moves to each new question for screen readers; Back keeps answers; the flare question and note come after the five; finishing saves every answer; the note stops at 240; a failed save explains and keeps the answers; changing answers starts from the saved ones; Back from the first question |
 | `components/check-in/check-in-screen.test.tsx` | 6 | No check-in today starts the flow (yesterday's doesn't count); finishing shows the thank-you; an existing check-in shows today's answers and can be changed; coming back after finishing shows the answers, not the thank-you again (a bug the end-to-end test found); nothing shows on the server |
@@ -185,6 +187,7 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 | `status.spec.ts` | 1 | The whole chain works: browser → web app → API → database → back to the page |
 | `first-visit.spec.ts` | 2 | A new guest is welcomed once, can start a check-in without an account, and sees the home screen on later visits; the menu reaches each page |
 | `accessibility.spec.ts` | 14 | Every page (welcome, home, check-in, calendar, community, profile, sign-in) meets WCAG 2.1 AA, at computer and phone size |
+| `calendar.spec.ts` | 2 | With made-up check-ins and the clock fixed on a known day: the month shows each day's colour, a tapped day shows its answers and note, months go back and forward, and today's empty day leads to the check-in; meets WCAG 2.1 AA with coloured days and with a day open. On a phone, a tapped day's details scroll into view |
 | `check-in.spec.ts` | 1 | A guest's whole check-in: Continue starts off, every question, flare, note, the thank-you; home then shows today as done and coloured; the answers can be viewed and changed, and survive a reload. Each check-in screen also meets WCAG 2.1 AA |
 
 ---
@@ -194,9 +197,9 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 The common model is the **test pyramid**: many fast unit tests at the bottom, fewer integration tests in the middle, and a few slow end-to-end tests at the top. Google describes the same idea as small, medium and large tests, and is often quoted as aiming for roughly 70% / 20% / 10%.
 
 ```
-        /\       end-to-end: few, slow, the most realistic      18
+        /\       end-to-end: few, slow, the most realistic      20
        /  \      integration: several real pieces together       2 (+ api-status)
-      /____\     unit: many, fast, precise                     131
+      /____\     unit: many, fast, precise                     167
     __________
     static: lint, type check, API contract (the "testing trophy" base)
 ```
