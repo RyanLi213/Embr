@@ -12,7 +12,8 @@ export default defineConfig({
   testDir: "./e2e",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? "github" : "list",
+  // In CI, also write an HTML report; ci.yml saves it when a test fails
+  reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: WEB_URL,
     trace: "retain-on-failure",
@@ -27,10 +28,14 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: "pnpm dev",
+      // CI tests a production build, so every page is built before the tests
+      // start; locally the dev server builds each page on its first visit
+      command: process.env.CI ? "pnpm build && pnpm start" : "pnpm dev",
+      // Make crashes in the CI log point to our source files, not built ones
+      env: process.env.CI ? { NODE_OPTIONS: "--enable-source-maps" } : undefined,
       url: WEB_URL,
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
+      timeout: 180_000,
     },
   ],
 });
