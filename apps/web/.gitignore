@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Clerk's command-line tool (which Clerk app this folder is linked to)
+.clerk/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
