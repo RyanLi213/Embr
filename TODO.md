@@ -12,11 +12,10 @@ request once CI passes.
 - [ ] `feature/api-online`: put the API and database online, so the live site
   saves accounts too. Plan: Neon for Postgres, AWS Lambda for the API, both in
   US East 1, set up with Terraform and deployed by GitHub Actions.
-  - Done (2026-11-23, committed on the branch, not pushed yet): Neon project
-    (Postgres 18, US East 1) with both migrations applied; the API accepts
-    Neon's address as handed out; laptop and CI moved to Postgres 18 to match;
-    AWS account made with MFA on root; AWS CLI and Terraform installed
-  - Now: push the branch and merge this part as a small pull request
+  - Done (2026-11-23, pushed on the branch): Neon project (Postgres 18, US
+    East 1) with both migrations applied; the API accepts Neon's address as
+    handed out; laptop and CI moved to Postgres 18 to match; AWS account made
+    with MFA on root; AWS CLI and Terraform installed
   - Waiting on AWS's account review (documents sent 2026-11-23), then in order:
     1. Budget alert: $5 a month, started from AWS's "Explore AWS" activity
        so it earns $20
@@ -38,6 +37,7 @@ request once CI passes.
        sign in on the live site and check a row appears in Neon
     8. `docs/deploy.md` (how it deploys, how to roll back), tests, and the
        `AGENTS.md` update (shown to Ryan first)
+    9. Open the pull request for the whole branch and merge it once CI passes
 - [ ] Before 2027-05-23: upgrade the AWS account from the Free plan (or move
   the API), or AWS switches off everything when the free period or the
   credits run out. Credits: $100, plus up to $100 more from AWS's "Explore
