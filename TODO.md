@@ -9,18 +9,6 @@ Active tasks only. Finished tasks move to `DONE.md`.
 Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
-- [ ] `feature/sign-in`: sign-up and sign-in with Clerk, in the Figma layout.
-  Each account is saved in our own database (a `users` table: Clerk ID, email,
-  name, sign-up time, last sign-in). Profile gets sign out. Community stays
-  locked when signed out, and shows a "coming soon" page once signed in.
-  Saving accounts works on the laptop first (decided 2026-11-23).
-  - Done (2026-11-23): Clerk set up, sign-in and sign-up pages, first test
-    account, keys in Vercel and GitHub secrets, GitHub sign-in turned off
-  - Left, in three parts: (1) API: `users` table, token check, `GET /v1/me`;
-    (2) web: Profile with sign out, Community "coming soon", name in the
-    sidebar; (3) tests, and the Clerk keys passed to CI. Pushing the branch
-    is fine; open the pull request only after part 3, since that is when CI
-    runs and its sign-in tests need the Clerk keys.
 - [ ] Next branch after sign-in: put the API and database online, so the live
   site saves accounts too
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
