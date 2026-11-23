@@ -8,6 +8,14 @@ export const DAY_DOT: Record<DayColour, string> = {
   flare: "bg-day-flare",
 };
 
+/** A soft square with a darker dot, for the month calendar (from the Figma) */
+export const DAY_SQUARE: Record<DayColour, { square: string; dot: string }> = {
+  good: { square: "bg-[#e3f5e9]", dot: "bg-[#4c9c68]" },
+  okay: { square: "bg-[#fff2d4]", dot: "bg-[#d4941c]" },
+  hard: { square: "bg-[#ffe2e7]", dot: "bg-[#d95369]" },
+  flare: { square: "bg-[#f0ddf4]", dot: "bg-[#9552a4]" },
+};
+
 /** A soft background with a darker tick, for the week strip (from the Figma) */
 export const DAY_TINT: Record<DayColour, string> = {
   good: "bg-[#c6ecd3] text-[#186d3e]",

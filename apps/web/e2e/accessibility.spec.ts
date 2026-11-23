@@ -6,7 +6,7 @@ const PAGES: { path: string; heading: string | RegExp }[] = [
   { path: "/welcome", heading: "Meet each day with a little more ease." },
   { path: "/", heading: /^Good (morning|afternoon|evening), friend\.$/ },
   { path: "/check-in", heading: "How is your pain today?" },
-  { path: "/calendar", heading: "Your calendar is on its way." },
+  { path: "/calendar", heading: "Calendar" },
   { path: "/community", heading: "You shouldn’t have to do this alone." },
   { path: "/profile", heading: "Take Embr with you." },
   { path: "/sign-in", heading: "Accounts are on their way." },

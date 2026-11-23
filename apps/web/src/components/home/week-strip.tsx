@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 
 import { DAY_TINT } from "@/components/check-in/day-colours";
+import { describeDay } from "@/lib/calendar";
 import { type DayColour, dayColour } from "@/lib/check-in";
 import { weekOf, type WeekDay } from "@/lib/today";
 import { useCheckIns } from "@/lib/use-check-ins";
@@ -10,18 +11,6 @@ import { useCurrentHour } from "@/lib/use-current-hour";
 import { cn } from "@/lib/utils";
 
 const LETTERS = ["M", "T", "W", "T", "F", "S", "S"];
-
-// What a screen reader says for a day with no check-in
-const DESCRIPTION: Record<WeekDay["when"], string> = {
-  past: "no check-in",
-  today: "today, not checked in yet",
-  future: "still to come",
-};
-
-function spokenDay(when: WeekDay["when"], colour: DayColour | undefined) {
-  if (!colour) return DESCRIPTION[when];
-  return when === "today" ? `today, ${colour} day` : `${colour} day`;
-}
 
 function dotStyle(when: WeekDay["when"] | undefined, colour: DayColour | undefined) {
   if (colour) return cn(DAY_TINT[colour], when === "today" && "ring-2 ring-ember ring-offset-2");
@@ -49,7 +38,7 @@ export function WeekStrip() {
             className="min-w-[35px] text-center text-xs font-extrabold text-muted-foreground md:min-w-[43px]"
           >
             <span aria-hidden>{letter}</span>
-            {day && <span className="sr-only">{`${day.name}: ${spokenDay(day.when, colour)}`}</span>}
+            {day && <span className="sr-only">{`${day.name}: ${describeDay(day.when, colour)}`}</span>}
             <span
               aria-hidden
               className={cn(

@@ -3,12 +3,11 @@ import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
 import { Mascot } from "@/components/brand/mascot";
-import { DAY_DOT } from "@/components/check-in/day-colours";
+import { ColourKey } from "@/components/check-in/colour-key";
 import { Greeting } from "@/components/home/greeting";
 import { TodayCard } from "@/components/home/today-card";
 import { WeekStrip } from "@/components/home/week-strip";
 import { Kicker, Page } from "@/components/shell/page";
-import { COLOUR_NAMES } from "@/lib/check-in-questions";
 
 const CARD = "rounded-[22px] border shadow-[0_6px_20px_rgb(55_36_21/0.035)]";
 
@@ -71,17 +70,7 @@ function WeekPanel() {
       <WeekStrip />
 
       <p className="mt-5 text-sm text-muted-foreground">Check in each day to colour your week.</p>
-      <ul
-        aria-label="Colour key"
-        className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs font-bold text-muted-foreground"
-      >
-        {(["good", "okay", "hard", "flare"] as const).map((colour) => (
-          <li key={colour} className="flex items-center gap-1.5">
-            <span aria-hidden className={`size-2 rounded-full ${DAY_DOT[colour]}`} />
-            {COLOUR_NAMES[colour]}
-          </li>
-        ))}
-      </ul>
+      <ColourKey className="mt-2" />
     </section>
   );
 }

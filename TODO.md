@@ -12,10 +12,20 @@ request once CI passes.
 - [ ] Put the web app online right after `feature/home-screen` merges: a second
   Vercel project with root directory `apps/web`. The API stays on the laptop
   until accounts need it.
-- [ ] `feature/calendar`: month calendar from real check-ins, with day details
+- [ ] `feature/sign-in`: sign-up and sign-in with Clerk, in the Figma layout.
+  Each account is saved in our own database (a `users` table: Clerk ID, email,
+  name, sign-up time, last sign-in). Profile gets sign out. Community stays
+  locked when signed out, and shows a "coming soon" page once signed in.
+- [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
+  database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
   for example a small flicker for low energy and a big bright flame for high.
+
+## Milestone 3: privacy and consent (agreed 2026-11-22)
+
+- [ ] Privacy and consent. Embr is a prototype for now, so sign-in is built
+  first, without this.
 
 ## Check-in (agreed 2026-11-18, updated 2026-11-22)
 

@@ -31,7 +31,7 @@ test("the menu reaches every page", async ({ page, context, baseURL }) => {
   const menu = page.getByRole("navigation", { name: "Main" });
   await menu.getByRole("link", { name: "Calendar" }).click();
   await expect(page).toHaveURL(/\/calendar$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your calendar is on its way.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Calendar");
 
   await menu.getByRole("link", { name: /^Community/ }).click();
   await expect(page).toHaveURL(/\/community$/);
