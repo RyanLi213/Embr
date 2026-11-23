@@ -9,8 +9,18 @@ Active tasks only. Finished tasks move to `DONE.md`.
 Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
-- [ ] Next branch after sign-in: put the API and database online, so the live
-  site saves accounts too
+- [ ] `feature/api-online`: put the API and database online, so the live site
+  saves accounts too. Plan: Neon for Postgres, AWS Lambda for the API, both in
+  US East 1, set up with Terraform and deployed by GitHub Actions.
+  - Done (2026-11-23): Neon project (Postgres 18, US East 1) with both
+    migrations applied; the API accepts Neon's address as handed out; laptop
+    and CI moved to Postgres 18 to match
+  - Waiting on AWS's account review: budget alert, everyday login, CLI and
+    Terraform, then Lambda, automatic deploys, and Vercel pointed at the API
+- [ ] Before 2027-05-23: upgrade the AWS account from the Free plan (or move
+  the API), or AWS switches off everything when the free period or the
+  credits run out. Credits: $100, plus up to $100 more from AWS's "Explore
+  AWS" activities.
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
   database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
