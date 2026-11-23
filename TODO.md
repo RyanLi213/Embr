@@ -63,6 +63,9 @@ Day colour on the calendar:
 
 ## Later
 
+- [ ] Add more ways to sign in: passkeys, Apple, Microsoft, Facebook and phone
+  (SMS), without making the sign-in form crowded. Details in `notes.md`
+  (2026-11-23).
 - [ ] Build our own authentication to replace Clerk, once Embr has real users.
   Until then, Clerk handles sign-in, and the API keeps its own `users` table
   and a single login-check module, so the swap stays small. It needs (details
