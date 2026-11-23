@@ -53,6 +53,7 @@
   --color-day-good: var(--day-good);
   --color-day-okay: var(--day-okay);
   --color-day-hard: var(--day-hard);
+  --color-day-flare: var(--day-flare);
 }
 
 /*
@@ -67,6 +68,7 @@
   --day-good: #5caf78;
   --day-okay: #e6a52b;
   --day-hard: #e55b70;
+  --day-flare: #9552a4;
 
   /* shadcn/ui tokens, mapped to the brand */
   --background: #fff8ef; /* cream */
