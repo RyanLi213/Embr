@@ -2,6 +2,21 @@
 
 Ryan's thoughts and decisions, newest first.
 
+## 2026-11-23: The users table (built)
+
+Our own record of everyone who signs in, in Postgres (migration `0002`).
+Clerk signs people in; the API checks Clerk's token, then saves them here.
+
+| Column | What | Rules |
+| --- | --- | --- |
+| id | our own ID for the person | primary key, made by Postgres |
+| clerk_id | Clerk's ID, like `user_2abc…` | unique, so one person can never be saved twice |
+| email | their email | can be empty, for later sign-in ways like phone |
+| name | their name | can be empty |
+| phone | their phone number | can be empty |
+| created_at | when they were first saved | set automatically |
+| last_seen_at | last time they opened the app signed in | updated on every `/v1/me` |
+
 ## 2026-11-23: More ways to sign in (later)
 
 I want to add all of these, but too many buttons will make the sign-in form
