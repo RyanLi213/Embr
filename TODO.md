@@ -10,6 +10,13 @@ Active tasks only. Finished tasks move to `DONE.md`.
   and whether flare prediction is getting close to being proven, so Embr could
   support it later. One template with a name blank (written 2026-11-23); start
   with the corresponding author listed under "Author information".
+- [ ] Ask the prof about getting access to the Cloudy with a Chance of Pain
+  data (Dixon's team, University of Manchester). The raw data can't be
+  downloaded; the data handlers must give permission, usually to an academic
+  applicant with a research plan, ethics approval and a data use agreement,
+  often for academic use only. Options: the prof applies, or we ask the team
+  to run our question ("does it predict flares?") on their data. Plan for
+  Embr's own data (check-ins plus local weather) either way.
 
 ## Milestone 2: screens from the Figma design (agreed 2026-11-18)
 
