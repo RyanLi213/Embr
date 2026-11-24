@@ -103,6 +103,16 @@ Day colour on the calendar:
 
 ## Later
 
+- [ ] A personal patterns model (multilevel model), shown to people only as
+  their own patterns, never as a flare prediction. Details in `notes.md`
+  (2026-11-24). In order:
+  1. `feature/sync-check-ins` (above), so check-ins are in the database
+  2. Ask each person's city (or the first three characters of their postal
+     code, not GPS) and match daily weather to their check-ins
+  3. Consent that covers using health data and location for the model
+     (Milestone 3)
+  4. Build and test the model in the background, as research
+  5. Phone or watch data (sleep, steps, heart rate), with the mobile app
 - [ ] Add more ways to sign in: passkeys, Apple, Microsoft, Facebook and phone
   (SMS), without making the sign-in form crowded. Details in `notes.md`
   (2026-11-23).
