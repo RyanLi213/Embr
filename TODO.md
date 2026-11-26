@@ -107,6 +107,10 @@ Day colour on the calendar:
 
 ## Later
 
+- [ ] Split `/v1/health` into "is it running?" (always 200) and "is it
+  ready?" (503 when the database is down), and add a Google Cloud uptime
+  check that emails Ryan when "ready" fails. Today `/v1/health` answers 200
+  even when the database is down, so simple monitors would miss it.
 - [ ] A personal patterns model (multilevel model), shown to people only as
   their own patterns, never as a flare prediction. Details in `notes.md`
   (2026-11-24). In order:
