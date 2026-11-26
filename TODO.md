@@ -39,18 +39,19 @@ request once CI passes.
     (`us-east4`, port 8000, 0 to 2 copies) with the online API settings,
     Neon's address in Secret Manager, keyless deploys for GitHub Actions;
     state in a Cloud Storage bucket. The API address shows Google's sample
-    page until the first deploy.
+    page until the first deploy. Deploy workflow written
+    (`.github/workflows/deploy.yml`; migrations read Neon's address from
+    Secret Manager). First deploy done by hand (2026-11-26): the API is
+    online, `/v1/health` says ok with the database connected, and it accepts
+    calls from the live site.
   - Next, in order:
-    1. GitHub Actions deploy workflow, after CI passes on `main`: build the
-       image, push it to Artifact Registry, run migrations on Neon, deploy the
-       new version to Cloud Run, check `/v1/health`. Migrations read Neon's
-       address from Secret Manager (no copy in GitHub). The workflow only runs
-       once it is on `main`, so the first deploy is done by hand
-    2. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
+    1. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
        then sign in on the live site and check a row appears in Neon
-    3. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
+    2. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
        Terraform check in CI), and the `AGENTS.md` update (shown to Ryan first)
-    4. Open the pull request for the whole branch and merge it once CI passes
+    3. Open the pull request for the whole branch and merge it once CI passes,
+       then check the deploy workflow's first run (its Google login only works
+       from `main`)
 - [ ] Before 2027-02-24, when the Google Cloud free trial ends ($421.31 CAD of
   credits, started 2026-11-25): upgrade to a paid billing account, or Google
   switches the API off. The free monthly allowance still covers Embr after
