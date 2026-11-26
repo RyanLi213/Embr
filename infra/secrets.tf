@@ -19,4 +19,9 @@ resource "google_secret_manager_secret" "database_url" {
 resource "google_secret_manager_secret_version" "placeholder" {
   secret      = google_secret_manager_secret.database_url.id
   secret_data = "placeholder"
+
+  lifecycle {
+    # Adding the real address can switch the placeholder off; leave it off
+    ignore_changes = [enabled]
+  }
 }
