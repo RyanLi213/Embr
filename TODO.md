@@ -33,28 +33,26 @@ request once CI passes.
     handed out; laptop and CI moved to Postgres 18 to match; Terraform
     installed. Google Cloud account made, with 2-step verification on
     (2026-11-25), and a $5 CAD monthly budget alert on Cloud Run, counted
-    before free credits (2026-11-26).
+    before free credits; Google Cloud project made and the `gcloud` CLI
+    installed and signed in, for Terraform too (2026-11-26).
   - Next, in order:
-    1. A Google Cloud project for Embr, and the `gcloud` CLI installed and
-       signed in (`gcloud auth login`, plus
-       `gcloud auth application-default login` for Terraform)
-    2. Terraform in a new `infra/` folder: image storage (Artifact Registry),
+    1. Terraform in a new `infra/` folder: image storage (Artifact Registry),
        the Cloud Run service (`us-east4`, port 8000, scales to zero), Neon's
        address in Secret Manager, a way for GitHub Actions to deploy
        (Workload Identity Federation, no stored keys), Terraform state in a
        Cloud Storage bucket. The Dockerfile stays as it is
-    3. GitHub Actions deploy workflow, after CI passes on `main`: build the
+    2. GitHub Actions deploy workflow, after CI passes on `main`: build the
        image, push it to Artifact Registry, run migrations on Neon, deploy the
        new version to Cloud Run, check `/v1/health`. Neon's address goes in a
        GitHub secret
-    4. Online API settings: `EMBR_DATABASE_URL` (from Secret Manager),
+    3. Online API settings: `EMBR_DATABASE_URL` (from Secret Manager),
        `EMBR_CLERK_ISSUER`, `EMBR_CORS_ORIGINS=["https://embr-lovat.vercel.app"]`,
        `EMBR_ENVIRONMENT=production`
-    5. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
+    4. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
        then sign in on the live site and check a row appears in Neon
-    6. `docs/deploy.md` (how it deploys, how to roll back), tests, and the
+    5. `docs/deploy.md` (how it deploys, how to roll back), tests, and the
        `AGENTS.md` update (shown to Ryan first)
-    7. Open the pull request for the whole branch and merge it once CI passes
+    6. Open the pull request for the whole branch and merge it once CI passes
 - [ ] Before 2027-02-24, when the Google Cloud free trial ends ($421.31 CAD of
   credits, started 2026-11-25): upgrade to a paid billing account, or Google
   switches the API off. The free monthly allowance still covers Embr after
