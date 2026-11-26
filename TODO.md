@@ -43,8 +43,9 @@ request once CI passes.
   - Next, in order:
     1. GitHub Actions deploy workflow, after CI passes on `main`: build the
        image, push it to Artifact Registry, run migrations on Neon, deploy the
-       new version to Cloud Run, check `/v1/health`. Neon's address goes in a
-       GitHub secret
+       new version to Cloud Run, check `/v1/health`. Migrations read Neon's
+       address from Secret Manager (no copy in GitHub). The workflow only runs
+       once it is on `main`, so the first deploy is done by hand
     2. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
        then sign in on the live site and check a row appears in Neon
     3. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
