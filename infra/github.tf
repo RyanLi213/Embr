@@ -66,3 +66,11 @@ resource "google_service_account_iam_member" "deployer_runs_as_api" {
   role               = "roles/iam.serviceAccountUser"
   member             = google_service_account.deployer.member
 }
+
+# 4: read Neon's address, to run database migrations before each deploy. The
+# address stays in Secret Manager only, so a new password is changed once.
+resource "google_secret_manager_secret_iam_member" "deployer_reads_database_url" {
+  secret_id = google_secret_manager_secret.database_url.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = google_service_account.deployer.member
+}
