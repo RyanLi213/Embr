@@ -24,38 +24,47 @@ Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
 - [ ] `feature/api-online`: put the API and database online, so the live site
-  saves accounts too. Plan: Neon for Postgres, AWS Lambda for the API, both in
-  US East 1, set up with Terraform and deployed by GitHub Actions.
+  saves accounts too. Plan (changed 2026-11-25, AWS is blocked): Neon for
+  Postgres, Google Cloud Run for the API, both in N. Virginia (Neon in AWS US
+  East 1, Cloud Run in `us-east4`), set up with Terraform and deployed by
+  GitHub Actions. Details in `notes.md` (2026-11-25).
   - Done (2026-11-23, pushed on the branch): Neon project (Postgres 18, US
     East 1) with both migrations applied; the API accepts Neon's address as
-    handed out; laptop and CI moved to Postgres 18 to match; AWS account made
-    with MFA on root; AWS CLI and Terraform installed
-  - Waiting on AWS's account review (documents sent 2026-11-23), then in order:
-    1. Budget alert: $5 a month, started from AWS's "Explore AWS" activity
-       so it earns $20
-    2. Everyday login (IAM Identity Center user) and the CLI signed in with
-       it, so the root login stays locked away
-    3. Terraform in a new `infra/` folder: image storage (ECR), the Lambda
-       function with a function URL, logs kept 14 days, a role GitHub Actions
-       can deploy with (OIDC, no stored AWS keys), Terraform state stored in
-       AWS (S3)
-    4. Dockerfile: add the Lambda Web Adapter (one line; the same image still
-       runs anywhere)
+    handed out; laptop and CI moved to Postgres 18 to match; Terraform
+    installed. Google Cloud account made (2026-11-25).
+  - Next, in order:
+    1. Turn on 2-step verification for the Google account, and check the free
+       trial's credits and end date (Billing → Credits)
+    2. Budget alert: $5 a month (Billing → Budgets & alerts). It only warns;
+       it doesn't stop spending
+    3. A Google Cloud project for Embr, and the `gcloud` CLI installed and
+       signed in (`gcloud auth login`, plus
+       `gcloud auth application-default login` for Terraform)
+    4. Terraform in a new `infra/` folder: image storage (Artifact Registry),
+       the Cloud Run service (`us-east4`, port 8000, scales to zero), Neon's
+       address in Secret Manager, a way for GitHub Actions to deploy
+       (Workload Identity Federation, no stored keys), Terraform state in a
+       Cloud Storage bucket. The Dockerfile stays as it is
     5. GitHub Actions deploy workflow, after CI passes on `main`: build the
-       image, push it to ECR, run migrations on Neon, update Lambda, check
-       `/v1/health`. Neon's address goes in a GitHub secret
-    6. Online API settings: `EMBR_DATABASE_URL`, `EMBR_CLERK_ISSUER`,
-       `EMBR_CORS_ORIGINS=["https://embr-lovat.vercel.app"]`,
+       image, push it to Artifact Registry, run migrations on Neon, deploy the
+       new version to Cloud Run, check `/v1/health`. Neon's address goes in a
+       GitHub secret
+    6. Online API settings: `EMBR_DATABASE_URL` (from Secret Manager),
+       `EMBR_CLERK_ISSUER`, `EMBR_CORS_ORIGINS=["https://embr-lovat.vercel.app"]`,
        `EMBR_ENVIRONMENT=production`
-    7. Vercel: set `NEXT_PUBLIC_API_URL` to the function URL, redeploy, then
-       sign in on the live site and check a row appears in Neon
+    7. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
+       then sign in on the live site and check a row appears in Neon
     8. `docs/deploy.md` (how it deploys, how to roll back), tests, and the
        `AGENTS.md` update (shown to Ryan first)
     9. Open the pull request for the whole branch and merge it once CI passes
-- [ ] Before 2027-05-23: upgrade the AWS account from the Free plan (or move
-  the API), or AWS switches off everything when the free period or the
-  credits run out. Credits: $100, plus up to $100 more from AWS's "Explore
-  AWS" activities.
+- [ ] Before the Google Cloud free trial ends (date in Billing → Credits):
+  upgrade to a paid billing account, or Google switches the API off. The free
+  monthly allowance still covers Embr after that.
+- [ ] AWS (on hold): send the ID and a card statement from the last 2 months
+  by 2026-11-27, through AWS Settings → Contact support, or AWS closes the
+  account. If approved, AWS is a later option (Lambda practice, S3 for files).
+  On the Free plan, don't turn on IAM Identity Center or AWS Organizations:
+  they end the credits.
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
   database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
