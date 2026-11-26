@@ -1,0 +1,90 @@
+# Continuous deployment: after CI passes on main, puts the new version of the
+# API online on Google Cloud Run. Can also be started by hand (Actions tab >
+# Deploy API > Run workflow). GitHub only runs it once this file is on main.
+name: Deploy API
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time. A newer one waits instead of stopping one halfway
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # lets the job ask GitHub for a signed token, to log in to Google
+
+env:
+  # None of these are secret (see infra/outputs.tf)
+  REGION: us-east4
+  SERVICE: embr-api
+  IMAGE: us-east4-docker.pkg.dev/grand-magpie-515906-i0/embr/api
+  WORKLOAD_IDENTITY_PROVIDER: projects/992240712662/locations/global/workloadIdentityPools/github/providers/embr-repo
+  DEPLOYER: github-deployer@grand-magpie-515906-i0.iam.gserviceaccount.com
+
+jobs:
+  deploy:
+    name: Build, migrate, deploy and check
+    # Only after CI passed on a push to main (not on a pull request), or by hand
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out the code CI tested
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      # Each image is labelled with its commit, so every version online can be
+      # traced back to its code
+      - name: Note which commit this deploys
+        run: echo "TAG=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      # --- Log in to Google with no stored key (see infra/github.tf) ---
+      - name: Log in to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.DEPLOYER }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      # --- Pack the API into an image and put it on the shelf ---
+      - name: Build the API's Docker image
+        run: docker build --tag "$IMAGE:$TAG" apps/api
+
+      - name: Push it to Artifact Registry
+        run: |
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          docker push "$IMAGE:$TAG"
+
+      # --- Database first, so the new code never meets old tables. Runs from
+      # the same image, and is safe to repeat (Alembic skips done migrations) ---
+      - name: Apply database migrations on Neon
+        run: |
+          EMBR_DATABASE_URL="$(gcloud secrets versions access latest --secret=embr-database-url)"
+          echo "::add-mask::$EMBR_DATABASE_URL" # never show it in the logs
+          export EMBR_DATABASE_URL
+          docker run --rm --env EMBR_DATABASE_URL "$IMAGE:$TAG" alembic upgrade head
+
+      # Swaps in the new image only; every other setting stays as Terraform made it
+      - name: Deploy to Cloud Run
+        run: gcloud run services update "$SERVICE" --image "$IMAGE:$TAG" --region "$REGION" --quiet
+
+      # /v1/health answers 200 even when the database is down, so read the reply
+      - name: Check the API and its database answer
+        run: |
+          url="$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')"
+          body="$(curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors "$url/v1/health")"
+          echo "$body"
+          echo "$body" | jq --exit-status '.status == "ok" and .environment == "production"'
