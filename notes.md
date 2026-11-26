@@ -2,7 +2,81 @@
 
 Ryan's thoughts and decisions, newest first.
 
-## 2026-11-23: Putting the API online (decided)
+## 2026-11-25: The API moves to Google Cloud Run (decided: Google Cloud is home)
+
+AWS kept blocking us: the first account and a second one (made because the
+first review was slow) were both suspended for identity checks, and every AWS
+service answers "Access denied" until AWS approves the ID. So the API goes on
+Google Cloud Run for now. Neon, Vercel, the Docker image and the API code stay
+the same; only the Terraform files and the deploy workflow differ.
+
+- **Cloud Run vs Lambda:** both run only when called, give a free `https://`
+  address and wait a moment after a quiet spell. Cloud Run runs the Docker
+  image as is (no adapter); it is told the app listens on port 8000, so the
+  Dockerfile doesn't change.
+- **Cost:** about $0. Free each month: 2 million requests, 180,000
+  vCPU-seconds and 360,000 GiB-seconds (CPU only while answering a request).
+  New Google Cloud customers also get $300 of trial credits.
+- **Region:** `us-east4` (N. Virginia), the same area as Neon's AWS US East 1,
+  so the API and the database stay close.
+- **No stored keys:** GitHub Actions signs in to Google Cloud with Workload
+  Identity Federation (the same idea as AWS's OIDC role). Neon's address goes
+  in Secret Manager for the API and in a GitHub secret for migrations.
+- **Everyday login:** the Google account with 2-step verification. Google has
+  no separate root user to lock away.
+- **Google Cloud is home** (decided 2026-11-26). No "Lambda, then ECS" move:
+  Cloud Run scales to zero now, and with real users one setting (minimum one
+  instance) keeps it always on. Later pieces have Google versions: Cloud SQL
+  (instead of RDS), Cloud Storage (S3), Cloud Tasks or Pub/Sub (SQS). Ryan
+  may think about swapping to AWS one day; not planned.
+- **AWS on the side, maybe:** send the ID and card statement by 2026-11-27
+  through AWS Settings → Contact support. If approved, use it for something
+  small on the side so AWS still shows on the resume. On AWS's Free plan, turning on IAM Identity Center
+  or AWS Organizations ends the credits: use an IAM user with MFA and
+  `aws login` instead.
+- **AWS words:** "projects" are real (AWS Settings: a management account
+  holding projects, each its own AWS account). A Builder ID is only a profile
+  for AWS's learning and community sites. Amazon.com is shopping.
+- **Lesson:** one account per provider. A second account during a review can
+  slow the review down.
+
+## 2026-11-24: A personal patterns model (to discuss)
+
+Research (Yimer 2022) shows people react to weather differently, so one rule
+for everyone won't work. Idea: a **multilevel model**, a regression where each
+person gets their own effects, pulled toward the group average until they have
+enough days of their own. It's statistics, but counts as ML (Python:
+`statsmodels`, or `PyMC` for the Bayesian version). People only see their own
+patterns ("your patterns suggest"), not a flare prediction; the model is
+tested in the background first, as research.
+
+What data it would use:
+
+| Source | What it gives | How we'd get it | When |
+| --- | --- | --- | --- |
+| Embr check-ins | Pain, stiffness, energy, mood, overall, flare yes/no. What the model predicts; yesterday's answers are also inputs | Already built | Once `sync-check-ins` is done |
+| Weather | Humidity, air pressure (and how fast it's changing), temperature, wind, rain; also tomorrow's forecast | Free weather data matched to the person's city and the date (Environment Canada, NOAA for the US) | Any time after sync |
+| Profile (asked once) | RA or OA, age range, years since diagnosis, medications | A short sign-up survey (already planned for personalization) | With the survey |
+| Phone or watch | Sleep, steps, heart rate | Apple Health and Google Health Connect, with permission | Later, in the mobile app |
+
+More check-in questions (sleep quality, stress, swollen hands, meds taken
+today) make the daily check-in longer, so they'd be optional or asked once a
+week.
+
+Three catches:
+
+1. The check-ins aren't in the database yet, only in each person's browser,
+   so `sync-check-ins` comes first.
+2. Embr needs each person's city to match the weather: ask for a city or the
+   first three characters of a postal code, not GPS (more private, and no
+   battery drain, which made people quit in Reade 2017).
+3. Consent comes first: using health data and location for a model needs
+   clear permission (Milestone 3).
+
+Order: `sync-check-ins`, then city plus daily weather, then consent, then the
+model. Phone data later, with the mobile app.
+
+## 2026-11-23: Putting the API online (decided; hosting changed 2026-11-25)
 
 What "online" means: three pieces. The web app is already on Vercel; the API
 needs a computer on the internet to run on (with `https://`), and the database
