@@ -33,8 +33,7 @@ request once CI passes.
     handed out; laptop and CI moved to Postgres 18 to match; Terraform
     installed. Google Cloud account made (2026-11-25).
   - Next, in order:
-    1. Turn on 2-step verification for the Google account, and check the free
-       trial's credits and end date (Billing → Credits)
+    1. Turn on 2-step verification for the Google account
     2. Budget alert: $5 a month (Billing → Budgets & alerts). It only warns;
        it doesn't stop spending
     3. A Google Cloud project for Embr, and the `gcloud` CLI installed and
@@ -57,9 +56,10 @@ request once CI passes.
     8. `docs/deploy.md` (how it deploys, how to roll back), tests, and the
        `AGENTS.md` update (shown to Ryan first)
     9. Open the pull request for the whole branch and merge it once CI passes
-- [ ] Before the Google Cloud free trial ends (date in Billing → Credits):
-  upgrade to a paid billing account, or Google switches the API off. The free
-  monthly allowance still covers Embr after that.
+- [ ] Before 2027-02-24, when the Google Cloud free trial ends ($421.31 CAD of
+  credits, started 2026-11-25): upgrade to a paid billing account, or Google
+  switches the API off. The free monthly allowance still covers Embr after
+  that.
 - [ ] AWS (on hold): send the ID and a card statement from the last 2 months
   by 2026-11-27, through AWS Settings → Contact support, or AWS closes the
   account. If approved, AWS is a later option (Lambda practice, S3 for files).
