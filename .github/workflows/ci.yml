@@ -92,3 +92,33 @@ jobs:
           name: playwright-report
           path: apps/web/playwright-report/
           retention-days: 7
+
+  # Checks the files that describe our Google Cloud setup (infra/). Runs beside
+  # the job above. It only reads the files: no Google login, nothing is changed.
+  terraform:
+    name: Terraform check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v5
+
+      - name: Set up Terraform (same version as the laptop)
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.17.2
+
+      - name: Formatting
+        run: terraform fmt -check -recursive
+
+      # Downloads the Google plugin from the lock file, without touching the
+      # real state in Google Cloud Storage
+      - name: Download the Google plugin
+        run: terraform init -backend=false -input=false
+
+      - name: Files are valid
+        run: terraform validate
