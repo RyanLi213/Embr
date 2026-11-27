@@ -1,8 +1,8 @@
 # Local development services. Start with `pnpm db:up`, stop with `pnpm db:down`.
 services:
   db:
-    # Postgres with the pgvector extension available
-    image: pgvector/pgvector:pg17
+    # Postgres 18 with the pgvector extension, the same version as Neon online
+    image: pgvector/pgvector:pg18
     environment:
       # Local-only credentials for the database on your own laptop
       POSTGRES_USER: embr
@@ -11,7 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - embr-db:/var/lib/postgresql/data
+      # From Postgres 18, the image keeps its data one folder up from before
+      - embr-db:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U embr -d embr"]
       interval: 2s

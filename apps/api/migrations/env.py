@@ -6,9 +6,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import create_async_engine
 
 from embr_api.core.config import get_settings
+from embr_api.core.database import asyncpg_url, create_engine
 from embr_api.models.base import Base
 
 config = context.config
@@ -21,8 +21,9 @@ target_metadata = Base.metadata
 
 
 def database_url() -> str:
-    """Use the address set on the config (tests do this), else the app settings."""
-    return config.get_main_option("sqlalchemy.url") or get_settings().database_url
+    """Use the address set on the config (tests do this), else the app settings.
+    Hosts' standard addresses (like Neon's) are turned into the asyncpg form."""
+    return asyncpg_url(config.get_main_option("sqlalchemy.url") or get_settings().database_url)
 
 
 def run_migrations_offline() -> None:
@@ -46,7 +47,8 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    connectable = create_async_engine(database_url(), poolclass=pool.NullPool)
+    # The same connection setup as the app, so Neon's pooled address works here too
+    connectable = create_engine(database_url(), poolclass=pool.NullPool)
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

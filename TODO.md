@@ -3,14 +3,70 @@
 Active tasks only. Finished tasks move to `DONE.md`.
 
 - [ ] Discuss the grand vision with Lisa and Leo
+- [ ] Email the Mount Sinai team behind the wearable RA flare study
+  ("Wearable devices detect physiological changes that precede and are
+  associated with symptomatic and inflammatory rheumatoid arthritis flares",
+  Scientific Reports; preprint PMC12486041) to ask how the research is going
+  and whether flare prediction is getting close to being proven, so Embr could
+  support it later. One template with a name blank (written 2026-11-23); start
+  with the corresponding author listed under "Author information".
+- [ ] Ask the prof about getting access to the Cloudy with a Chance of Pain
+  data (Dixon's team, University of Manchester). The raw data can't be
+  downloaded; the data handlers must give permission, usually to an academic
+  applicant with a research plan, ethics approval and a data use agreement,
+  often for academic use only. Options: the prof applies, or we ask the team
+  to run our question ("does it predict flares?") on their data. Plan for
+  Embr's own data (check-ins plus local weather) either way.
 
 ## Milestone 2: screens from the Figma design (agreed 2026-11-18)
 
 Web app only (`apps/web`). Each branch is merged into `main` through a pull
 request once CI passes.
 
-- [ ] Next branch after sign-in: put the API and database online, so the live
-  site saves accounts too
+- [ ] `feature/api-online`: put the API and database online, so the live site
+  saves accounts too. Plan (changed 2026-11-25, AWS is blocked): Neon for
+  Postgres, Google Cloud Run for the API, both in N. Virginia (Neon in AWS US
+  East 1, Cloud Run in `us-east4`), set up with Terraform and deployed by
+  GitHub Actions. Details in `notes.md` (2026-11-25).
+  - Done (2026-11-23, pushed on the branch): Neon project (Postgres 18, US
+    East 1) with both migrations applied; the API accepts Neon's address as
+    handed out; laptop and CI moved to Postgres 18 to match; Terraform
+    installed. Google Cloud account made, with 2-step verification on
+    (2026-11-25), and a $5 CAD monthly budget alert on Cloud Run, counted
+    before free credits; Google Cloud project made and the `gcloud` CLI
+    installed and signed in, for Terraform too (2026-11-26). Terraform in
+    `infra/` applied (2026-11-26): image storage, the Cloud Run service
+    (`us-east4`, port 8000, 0 to 2 copies) with the online API settings,
+    Neon's address in Secret Manager, keyless deploys for GitHub Actions;
+    state in a Cloud Storage bucket. The API address shows Google's sample
+    page until the first deploy. Deploy workflow written
+    (`.github/workflows/deploy.yml`; migrations read Neon's address from
+    Secret Manager). First deploy done by hand (2026-11-26): the API is
+    online, `/v1/health` says ok with the database connected, and it accepts
+    calls from the live site. Vercel's `NEXT_PUBLIC_API_URL` set to the API
+    (Production) and the live site rebuilt: signing in on the live site saves
+    the person in Neon (2026-11-27).
+  - Next, in order:
+    1. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
+       Terraform check in CI), and the `AGENTS.md` update (shown to Ryan first)
+    2. Open the pull request for the whole branch and merge it once CI passes,
+       then check the deploy workflow's first run (its Google login only works
+       from `main`)
+- [ ] Right after `feature/api-online` merges: make sign-up easier in Clerk
+  by lowering the minimum password length from 15 to 8 characters (decided
+  2026-11-27; Ryan wanted 6, but Clerk's lowest allowed minimum is 8). Keep
+  the leaked-password check. Change with
+  `pnpm dlx clerk@latest config patch --app app_3MUeJ7Uc9zQHcmrnf5sLIL0Dacv`
+  (`--dry-run` first).
+- [ ] Before 2027-02-24, when the Google Cloud free trial ends ($421.31 CAD of
+  credits, started 2026-11-25): upgrade to a paid billing account, or Google
+  switches the API off. The free monthly allowance still covers Embr after
+  that.
+- [ ] AWS (on hold): send the ID and a card statement from the last 2 months
+  by 2026-11-27, through AWS Settings → Contact support, or AWS closes the
+  account. If approved, AWS is a later option (Lambda practice, S3 for files).
+  On the Free plan, don't turn on IAM Identity Center or AWS Organizations:
+  they end the credits.
 - [ ] `feature/sync-check-ins`: a signed-in person's check-ins are saved to the
   database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
@@ -58,6 +114,20 @@ Day colour on the calendar:
 
 ## Later
 
+- [ ] Split `/v1/health` into "is it running?" (always 200) and "is it
+  ready?" (503 when the database is down), and add a Google Cloud uptime
+  check that emails Ryan when "ready" fails. Today `/v1/health` answers 200
+  even when the database is down, so simple monitors would miss it.
+- [ ] A personal patterns model (multilevel model), shown to people only as
+  their own patterns, never as a flare prediction. Details in `notes.md`
+  (2026-11-24). In order:
+  1. `feature/sync-check-ins` (above), so check-ins are in the database
+  2. Ask each person's city (or the first three characters of their postal
+     code, not GPS) and match daily weather to their check-ins
+  3. Consent that covers using health data and location for the model
+     (Milestone 3)
+  4. Build and test the model in the background, as research
+  5. Phone or watch data (sleep, steps, heart rate), with the mobile app
 - [ ] Add more ways to sign in: passkeys, Apple, Microsoft, Facebook and phone
   (SMS), without making the sign-in form crowded. Details in `notes.md`
   (2026-11-23).

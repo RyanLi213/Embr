@@ -66,7 +66,7 @@ Early development.
 | Backend | FastAPI (Python), SQLAlchemy, Alembic |
 | Database | PostgreSQL with pgvector |
 | Sign-in | Clerk |
-| Infrastructure | Docker, AWS, Terraform, GitHub Actions, Vercel |
+| Infrastructure | Docker, Google Cloud Run, Terraform, GitHub Actions, Vercel |
 | AI tooling | LangGraph, Langfuse |
 | Repo tooling | pnpm workspaces, Turborepo |
 | Design | Figma |
@@ -75,10 +75,11 @@ Early development.
 
 ```
 apps/
-  web/        Next.js web app (the product)
-  website/    public website
+  web/        Next.js web app (the product); website/ inside it is the public website
   api/        FastAPI backend
-packages/     shared code (coming later)
+packages/     shared code (the typed API client)
+infra/        Terraform: the API's Google Cloud setup
+docs/         how testing and deploying work
 ```
 
 ## Getting started
@@ -103,7 +104,7 @@ pnpm --filter @embr/web dev
 pnpm --filter @embr/api dev
 
 # Run the public website at http://localhost:4173
-python -m http.server 4173 --directory apps/website
+python -m http.server 4173 --directory apps/web/website
 
 # Check everything, exactly as CI does (needs Docker running)
 pnpm check
@@ -113,3 +114,5 @@ pnpm build
 ```
 
 What each check and test does, and how to run them one at a time: [docs/testing.md](docs/testing.md).
+
+How Embr runs online, how a change goes live, and how to roll back: [docs/deploy.md](docs/deploy.md).

@@ -14,6 +14,13 @@ node_modules/
 dist/
 coverage/
 
+# Terraform: downloaded plugins and any local copies of the state (the real
+# state lives in Google Cloud Storage and can hold secret values)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+
 # Python
 .venv/
 __pycache__/
