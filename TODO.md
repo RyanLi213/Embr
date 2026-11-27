@@ -43,13 +43,13 @@ request once CI passes.
     (`.github/workflows/deploy.yml`; migrations read Neon's address from
     Secret Manager). First deploy done by hand (2026-11-26): the API is
     online, `/v1/health` says ok with the database connected, and it accepts
-    calls from the live site.
+    calls from the live site. Vercel's `NEXT_PUBLIC_API_URL` set to the API
+    (Production) and the live site rebuilt: signing in on the live site saves
+    the person in Neon (2026-11-27).
   - Next, in order:
-    1. Vercel: set `NEXT_PUBLIC_API_URL` to the Cloud Run address, redeploy,
-       then sign in on the live site and check a row appears in Neon
-    2. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
+    1. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
        Terraform check in CI), and the `AGENTS.md` update (shown to Ryan first)
-    3. Open the pull request for the whole branch and merge it once CI passes,
+    2. Open the pull request for the whole branch and merge it once CI passes,
        then check the deploy workflow's first run (its Google login only works
        from `main`)
 - [ ] After `feature/api-online` merges: make sign-up easier in Clerk. Now a
