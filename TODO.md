@@ -45,13 +45,11 @@ request once CI passes.
     online, `/v1/health` says ok with the database connected, and it accepts
     calls from the live site. Vercel's `NEXT_PUBLIC_API_URL` set to the API
     (Production) and the live site rebuilt: signing in on the live site saves
-    the person in Neon (2026-11-27).
-  - Next, in order:
-    1. `docs/deploy.md` (how it deploys, how to roll back), tests (including a
-       Terraform check in CI), and the `AGENTS.md` update (shown to Ryan first)
-    2. Open the pull request for the whole branch and merge it once CI passes,
-       then check the deploy workflow's first run (its Google login only works
-       from `main`)
+    the person in Neon (2026-11-27). `docs/deploy.md` written, a Terraform
+    check added to CI, README and `AGENTS.md` updated (2026-11-27).
+  - Next: open the pull request for the whole branch and merge it once CI
+    passes, then check the deploy workflow's first run (its Google login only
+    works from `main`)
 - [ ] Right after `feature/api-online` merges: make sign-up easier in Clerk
   by lowering the minimum password length from 15 to 8 characters (decided
   2026-11-27; Ryan wanted 6, but Clerk's lowest allowed minimum is 8). Keep
