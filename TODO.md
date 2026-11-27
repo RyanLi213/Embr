@@ -52,11 +52,10 @@ request once CI passes.
     2. Open the pull request for the whole branch and merge it once CI passes,
        then check the deploy workflow's first run (its Google login only works
        from `main`)
-- [ ] After `feature/api-online` merges: make sign-up easier in Clerk. Now a
-  password is required at sign-up with at least 15 characters. Ryan wanted
-  6, but Clerk's lowest allowed minimum is 8 (8 to 72). Options: lower it to
-  8, and/or make the password optional (email code and Google already
-  work). Keep the leaked-password check. Change with
+- [ ] Right after `feature/api-online` merges: make sign-up easier in Clerk
+  by lowering the minimum password length from 15 to 8 characters (decided
+  2026-11-27; Ryan wanted 6, but Clerk's lowest allowed minimum is 8). Keep
+  the leaked-password check. Change with
   `pnpm dlx clerk@latest config patch --app app_3MUeJ7Uc9zQHcmrnf5sLIL0Dacv`
   (`--dry-run` first).
 - [ ] Before 2027-02-24, when the Google Cloud free trial ends ($421.31 CAD of
