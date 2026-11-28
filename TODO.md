@@ -46,6 +46,9 @@ request once CI passes.
     (ask first, for shared computers). When a day is in both and they differ,
     say "You have 2 saved check-ins for Nov 20", show both and ask which to
     keep, most recent day first. Identical copies aren't asked about.
+- [ ] Calendar month picker (asked 2026-11-28; its own small branch after
+  `feature/sync-check-ins`): open a list of months and jump straight to one,
+  instead of clicking the arrows 8 times to see 8 months ago
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
   for example a small flicker for low energy and a big bright flame for high.
