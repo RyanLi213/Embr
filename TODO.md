@@ -35,6 +35,17 @@ request once CI passes.
   that.
 - [ ] `feature/sync-check-ins` (branch made 2026-11-28): a signed-in person's
   check-ins are saved to the database instead of only the browser
+  - Backend (plan agreed 2026-11-28; Ryan writes the tests first): a
+    `check_ins` table (one per person per day, answers 1 to 5 checked by the
+    database too, a `questions_version` starting at 1, deleted with the
+    person), `PUT /v1/check-ins/{date}`, `GET /v1/check-ins?from=&to=` (at most
+    366 days) and `POST /v1/check-ins/import` (saves the days the account
+    doesn't have, and sends back the account's version of days in both)
+  - Website, after: signed in saves and loads through the API; guests keep
+    the browser. At sign-in, the browser's check-ins move into the account
+    (ask first, for shared computers). When a day is in both and they differ,
+    say "You have 2 saved check-ins for Nov 20", show both and ask which to
+    keep, most recent day first. Identical copies aren't asked about.
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
   for example a small flicker for low energy and a big bright flame for high.
