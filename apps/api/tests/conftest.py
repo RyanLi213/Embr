@@ -1,5 +1,6 @@
-"""Shared test helpers: a throwaway Postgres, and made-up sign-in tokens."""
+"""Shared test helpers: a throwaway Postgres, made-up sign-in tokens, and the app on top."""
 
+import asyncio
 import time
 from collections.abc import Iterator
 from pathlib import Path
@@ -10,9 +11,14 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from cryptography.hazmat.primitives.asymmetric import rsa
+from fastapi.testclient import TestClient
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine
 from testcontainers.community.postgres import PostgresContainer
 
-from embr_api.core.auth import TokenVerifier
+from embr_api.core.auth import TokenVerifier, get_token_verifier
+from embr_api.core.config import Settings
+from embr_api.main import create_app
 
 API_ROOT = Path(__file__).resolve().parents[1]
 
@@ -72,3 +78,34 @@ class FakeClerk:
 @pytest.fixture(scope="session")
 def fake_clerk() -> FakeClerk:
     return FakeClerk()
+
+
+@pytest.fixture
+def client(database_url: str, fake_clerk: FakeClerk) -> Iterator[TestClient]:
+    """The real app on the test database, trusting the fake Clerk's tokens. Starts with no users."""
+    asyncio.run(run_sql(database_url, "DELETE FROM users"))
+    app = create_app(Settings(database_url=database_url, clerk_issuer=TEST_ISSUER))
+    app.dependency_overrides[get_token_verifier] = fake_clerk.verifier
+    with TestClient(app) as test_client:
+        yield test_client
+
+
+def signed_in(fake_clerk: FakeClerk, **changes: str) -> dict[str, str]:
+    """Request headers that sign in as the fake Clerk's person (pass changes for someone else)."""
+    return {"Authorization": f"Bearer {fake_clerk.token(**changes)}"}
+
+
+async def run_sql(
+    database_url: str, sql: str, params: dict[str, Any] | None = None
+) -> list[tuple[Any, ...]]:
+    """Runs SQL straight on the test database (to set up or check rows), and returns any rows.
+
+    Values go in `params` and are written `:name` in the SQL, so the database fills
+    them in safely instead of the values being pasted into the SQL text.
+    """
+    engine = create_async_engine(database_url)
+    async with engine.begin() as connection:
+        result = await connection.execute(text(sql), params or {})
+        rows = [tuple(row) for row in result] if result.returns_rows else []
+    await engine.dispose()
+    return rows
