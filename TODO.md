@@ -49,6 +49,9 @@ request once CI passes.
 - [ ] Calendar month picker (asked 2026-11-28; its own small branch after
   `feature/sync-check-ins`): open a list of months and jump straight to one,
   instead of clicking the arrows 8 times to see 8 months ago
+- [ ] Remove the "Back to home" button from today's check-in summary
+  (`apps/web/src/components/check-in/today-summary.tsx`; asked 2026-11-28):
+  the Back link at the top already goes home, so there are two back buttons
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
   a placeholder until then). Then the mascot also shows each check-in answer,
   for example a small flicker for low energy and a big bright flame for high.
