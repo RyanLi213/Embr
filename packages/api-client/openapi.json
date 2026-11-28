@@ -54,10 +54,440 @@
           }
         ]
       }
+    },
+    "/v1/check-ins/{date}": {
+      "put": {
+        "tags": [
+          "check-ins"
+        ],
+        "summary": "Save the signed-in person's check-in for one day, replacing any earlier one",
+        "operationId": "save_day_v1_check_ins__date__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "The person's own day, as YYYY-MM-DD",
+              "title": "Date"
+            },
+            "description": "The person's own day, as YYYY-MM-DD"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInAnswers"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in, or the sign-in token isn't valid"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/check-ins": {
+      "get": {
+        "tags": [
+          "check-ins"
+        ],
+        "summary": "The signed-in person's check-ins between two days (both included), oldest first",
+        "operationId": "load_days_v1_check_ins_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckInResponse"
+                  },
+                  "title": "Response Load Days V1 Check Ins Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in, or the sign-in token isn't valid"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/check-ins/import": {
+      "post": {
+        "tags": [
+          "check-ins"
+        ],
+        "summary": "Move check-ins a browser saved before signing in into the signed-in person's account",
+        "operationId": "import_days_v1_check_ins_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInImportResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in, or the sign-in token isn't valid"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
+      "CheckInAnswers": {
+        "properties": {
+          "questions_version": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 1.0,
+            "title": "Questions Version"
+          },
+          "pain": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Pain"
+          },
+          "stiffness": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Stiffness"
+          },
+          "energy": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Energy"
+          },
+          "mood": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Mood"
+          },
+          "overall": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Overall"
+          },
+          "flare": {
+            "type": "boolean",
+            "title": "Flare"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 240,
+            "pattern": "^[^\\x00]*$",
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "questions_version",
+          "pain",
+          "stiffness",
+          "energy",
+          "mood",
+          "overall",
+          "flare"
+        ],
+        "title": "CheckInAnswers",
+        "description": "One day's answers, as the website sends them. The day itself is in the address."
+      },
+      "CheckInImport": {
+        "properties": {
+          "check_ins": {
+            "items": {
+              "$ref": "#/components/schemas/CheckInToImport"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Check Ins"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "check_ins"
+        ],
+        "title": "CheckInImport",
+        "description": "The check-ins a browser saved before signing in, to move into the account."
+      },
+      "CheckInImportResult": {
+        "properties": {
+          "imported": {
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "type": "array",
+            "title": "Imported"
+          },
+          "conflicts": {
+            "items": {
+              "$ref": "#/components/schemas/CheckInResponse"
+            },
+            "type": "array",
+            "title": "Conflicts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imported",
+          "conflicts"
+        ],
+        "title": "CheckInImportResult",
+        "description": "What an import did. Days whose two copies were identical appear in neither list."
+      },
+      "CheckInResponse": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "questions_version": {
+            "type": "integer",
+            "title": "Questions Version"
+          },
+          "pain": {
+            "type": "integer",
+            "title": "Pain"
+          },
+          "stiffness": {
+            "type": "integer",
+            "title": "Stiffness"
+          },
+          "energy": {
+            "type": "integer",
+            "title": "Energy"
+          },
+          "mood": {
+            "type": "integer",
+            "title": "Mood"
+          },
+          "overall": {
+            "type": "integer",
+            "title": "Overall"
+          },
+          "flare": {
+            "type": "boolean",
+            "title": "Flare"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "questions_version",
+          "pain",
+          "stiffness",
+          "energy",
+          "mood",
+          "overall",
+          "flare",
+          "note",
+          "updated_at"
+        ],
+        "title": "CheckInResponse",
+        "description": "One saved check-in, as the API sends it back."
+      },
+      "CheckInToImport": {
+        "properties": {
+          "questions_version": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 1.0,
+            "title": "Questions Version"
+          },
+          "pain": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Pain"
+          },
+          "stiffness": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Stiffness"
+          },
+          "energy": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Energy"
+          },
+          "mood": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Mood"
+          },
+          "overall": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Overall"
+          },
+          "flare": {
+            "type": "boolean",
+            "title": "Flare"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 240,
+            "pattern": "^[^\\x00]*$",
+            "title": "Note",
+            "default": ""
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "questions_version",
+          "pain",
+          "stiffness",
+          "energy",
+          "mood",
+          "overall",
+          "flare",
+          "date"
+        ],
+        "title": "CheckInToImport",
+        "description": "A check-in saved in a browser before signing in, with its day."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "HealthResponse": {
         "properties": {
           "status": {
@@ -156,6 +586,46 @@
         ],
         "title": "UserResponse",
         "description": "The signed-in person, as saved in our database."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
       }
     },
     "securitySchemes": {
