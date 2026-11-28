@@ -147,7 +147,7 @@ The web test `api-status.test.tsx` sits between unit and integration: it uses th
 
 ## Every test, and what it protects
 
-**238 tests in total**: 192 web unit, 23 API, 23 end-to-end.
+**385 tests in total**: 192 web unit, 170 API, 23 end-to-end.
 
 Web unit tests never contact Clerk: `src/test/clerk.tsx` is a fake Clerk that starts every test signed out, and `signInAs()` signs in a made-up person.
 
@@ -185,7 +185,11 @@ Web unit tests never contact Clerk: `src/test/clerk.tsx` is a fake Clerk that st
 | `test_cors.py` | 4 | The browser may call the API from the web app's address, including the browser's "may I?" preflight request; other websites are blocked; a typo in the default setting is caught |
 | `test_auth.py` | 10 | The sign-in token check, with a made-up signing key (no internet): a valid token says who is signed in; expired, wrong-Clerk-app, wrong-website, no-website, no-person and forged tokens are all refused; `/v1/me` answers 401 without a valid token and never says which check failed; 503 when sign-in isn't set up; the real checker uses our Clerk app and websites and is reused |
 | `test_database.py` | 3 | **Integration**, with a real Postgres: health reports the database as connected; the migrations switch on pgvector and create the `users` table with a unique Clerk ID |
+| `test_database_url.py` | 7 | Neon's address works as Neon hands it out: it's turned into the form our database driver needs, addresses already in that form are left alone, the short `postgres://` form is accepted, and saved statements are switched off only on Neon's pooled address |
 | `test_me.py` | 4 | **Integration**, `GET /v1/me` with a real Postgres: the first visit saves the person; later visits update the same row (new email, phone, last seen) without a duplicate; two people get two rows; nothing is saved without a valid token |
+| `test_check_ins_table.py` | 29 | **Integration**, the `check_ins` table's own rules, straight on a real Postgres (a second safety net behind the API): answers outside 1 to 5, notes over 240 characters, missing values and a `questions_version` below 1 are refused; one check-in per person per day, but two people can share a day; a check-in must belong to a real person, and deleting a person deletes only their check-ins |
+| `test_check_in_rules.py` | 86 | **Unit**, the rules for check-ins sent to the API (no database): answers must be whole numbers 1 to 5 ("3", 3.5 and true are refused), flare must be true or false, nothing extra (like a user ID) is accepted, only known questions versions, the note is trimmed then limited to 240 characters; a day must be written YYYY-MM-DD and be no later than UTC's tomorrow; an import holds at most 1,000 check-ins, each day once; a range is at most 366 days and not backwards |
+| `test_check_ins.py` | 25 | **Integration**, the check-in routes with a real Postgres. Saving (`PUT /v1/check-ins/{date}`): saves and sends back the day, replaces it on a second save, works before `/v1/me` has run, needs sign-in (checked before the answers), refuses bad answers and days that haven't started, and errors never repeat what was sent. Loading (`GET /v1/check-ins`): only the range, oldest first, never someone else's check-ins, and a GET changes nothing. Importing (`POST /v1/check-ins/import`): new days move in; a day already in the account keeps the account's version and comes back as a conflict if it differs; identical copies and repeated imports change nothing; one bad check-in saves nothing |
 
 ### End-to-end tests (Playwright), `apps/web/e2e/`
 
