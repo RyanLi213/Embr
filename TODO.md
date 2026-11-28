@@ -33,11 +33,6 @@ request once CI passes.
   credits, started 2026-11-25): upgrade to a paid billing account, or Google
   switches the API off. The free monthly allowance still covers Embr after
   that.
-- [ ] AWS (on hold): send the ID and a card statement from the last 2 months
-  by 2026-11-27, through AWS Settings → Contact support, or AWS closes the
-  account. If approved, AWS is a later option (Lambda practice, S3 for files).
-  On the Free plan, don't turn on IAM Identity Center or AWS Organizations:
-  they end the credits.
 - [ ] `feature/sync-check-ins` (branch made 2026-11-28): a signed-in person's
   check-ins are saved to the database instead of only the browser
 - [ ] Swap in the new mascot once the team finishes it (the website artwork is
@@ -85,6 +80,12 @@ Day colour on the calendar:
 
 ## Later
 
+- [ ] AWS (on hold since 2026-11-28; Google Cloud is fine for now): the ID and
+  card statement weren't sent by the 2026-11-27 deadline, so the accounts may
+  be closed. When picking it up, first check each account's status through
+  AWS Settings → Contact support. If approved, AWS is a later option (Lambda
+  practice, S3 for files). On the Free plan, don't turn on IAM Identity Center
+  or AWS Organizations: they end the credits.
 - [ ] Split `/v1/health` into "is it running?" (always 200) and "is it
   ready?" (503 when the database is down), and add a Google Cloud uptime
   check that emails Ryan when "ready" fails. Today `/v1/health` answers 200
