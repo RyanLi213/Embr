@@ -3,12 +3,29 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from embr_api.core.config import Settings, get_settings
 from embr_api.core.database import create_engine, create_session_factory
-from embr_api.routes import health, me
+from embr_api.routes import check_ins, health, me
+
+
+async def _refused_without_repeating_it(request: Request, error: Exception) -> JSONResponse:
+    """A 422 that says which field broke which rule, but never repeats what was sent.
+
+    FastAPI's own 422 copies the sent value into the reply. For a check-in that
+    can be a note full of health details, so it's left out here.
+    """
+    errors = error.errors() if isinstance(error, RequestValidationError) else []
+    detail = [{"type": e["type"], "loc": e["loc"], "msg": e["msg"]} for e in errors]
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        content=jsonable_encoder({"detail": detail}),
+    )
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -26,6 +43,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title=app_settings.app_name, version=app_settings.version, lifespan=lifespan)
     app.dependency_overrides[get_settings] = lambda: app_settings
+    app.add_exception_handler(RequestValidationError, _refused_without_repeating_it)
 
     app.add_middleware(
         CORSMiddleware,
@@ -37,6 +55,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1 = APIRouter(prefix="/v1")
     v1.include_router(health.router)
     v1.include_router(me.router)
+    v1.include_router(check_ins.router)
     app.include_router(v1)
 
     return app
