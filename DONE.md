@@ -2,6 +2,7 @@
 
 Finished tasks, newest first.
 
+- 2026-11-27: Milestone 2 part 5, `feature/api-online`, merged in PR #6 (the API online on Google Cloud Run in `us-east4`, set up with Terraform in `infra/`; Neon Postgres 18, its address kept in Secret Manager; keyless deploys from GitHub Actions that run migrations first and check `/v1/health` after, and the first automatic run passed; the live site points at the API, so signing in there saves the person in Neon; `docs/deploy.md` and a Terraform check in CI)
 - 2026-11-23: Milestone 2 part 4, `feature/sign-in` (sign-in and sign-up with Clerk in the Figma layout; our own `users` table with email, name and phone; the API checks Clerk's token and `GET /v1/me` saves each person; Profile with sign out, Community "coming soon" once signed in, name in the sidebar; saving works on the laptop until the API is online; 238 tests including a signed-in end-to-end test)
 - 2026-11-22: Put the web app online: Vercel project `embr` now deploys `apps/web` (Next.js) at https://embr-lovat.vercel.app instead of the website; the API stays on the laptop for now
 - 2026-11-22: Milestone 2 part 3, `feature/calendar` (month calendar coloured from each day's check-in; tapping a day shows its answers and note; earlier months; colour key shared with home; 36 new unit tests and 2 end-to-end tests)
