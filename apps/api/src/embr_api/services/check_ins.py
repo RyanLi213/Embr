@@ -6,9 +6,20 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from embr_api.core.auth import SignedInPerson
+from embr_api.models.check_in import ANSWERS, CheckIn
 from embr_api.repositories import check_ins
 from embr_api.repositories.users import find_user_id, save_signed_in_user
-from embr_api.schemas.check_in import CheckInAnswers, CheckInRange, CheckInResponse
+from embr_api.schemas.check_in import (
+    CheckInAnswers,
+    CheckInImport,
+    CheckInImportResult,
+    CheckInRange,
+    CheckInResponse,
+    CheckInToImport,
+)
+
+# What has to match for two copies of a day to count as the same
+_COMPARED = ("questions_version", *ANSWERS, "flare", "note")
 
 
 async def _user_id_of(session: AsyncSession, person: SignedInPerson) -> uuid.UUID:
@@ -51,3 +62,32 @@ async def load_check_ins(
         session, user_id=user_id, start=days.start, end=days.end
     )
     return [CheckInResponse.model_validate(check_in) for check_in in found]
+
+
+async def import_check_ins(
+    session: AsyncSession, person: SignedInPerson, browser: CheckInImport
+) -> CheckInImportResult:
+    """Moves check-ins a browser saved before signing in into the person's account.
+
+    Days the account doesn't have are added. Days it already has keep the
+    account's version; the ones that differ come back as conflicts, so the person
+    can choose. Choosing the browser's version is then a normal save.
+    """
+    user_id = await _user_id_of(session, person)
+    sent = {check_in.date: check_in for check_in in browser.check_ins}
+    imported = await check_ins.add_missing_days(
+        session, user_id=user_id, check_ins=[check_in.model_dump() for check_in in sent.values()]
+    )
+    in_both = await check_ins.check_ins_on(
+        session, user_id=user_id, days=[day for day in sent if day not in imported]
+    )
+    conflicts = [saved for saved in in_both if _differs(saved, sent[saved.date])]
+    await session.commit()
+    return CheckInImportResult(
+        imported=sorted(imported),
+        conflicts=[CheckInResponse.model_validate(saved) for saved in conflicts],
+    )
+
+
+def _differs(saved: CheckIn, sent: CheckInToImport) -> bool:
+    return any(getattr(saved, field) != getattr(sent, field) for field in _COMPARED)

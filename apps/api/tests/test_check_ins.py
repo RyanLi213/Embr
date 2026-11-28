@@ -259,3 +259,146 @@ def test_loading_refuses_a_backwards_or_too_long_range(
     )
 
     assert (backwards.status_code, too_long.status_code) == (422, 422)
+
+
+# --- Importing a browser's check-ins: POST /v1/check-ins/import ---
+
+
+def _import(
+    client: TestClient, headers: dict[str, str], check_ins: list[dict[str, Any]]
+) -> dict[str, Any]:
+    response = client.post("/v1/check-ins/import", json={"check_ins": check_ins}, headers=headers)
+    assert response.status_code == 200
+    result: dict[str, Any] = response.json()
+    return result
+
+
+def _from_browser(day: str, **changes: Any) -> dict[str, Any]:
+    return {**GOOD_ANSWERS, "date": day, **changes}
+
+
+def test_importing_moves_every_new_day_into_the_account(
+    client: TestClient, fake_clerk: FakeClerk
+) -> None:
+    alex = signed_in(fake_clerk)
+
+    result = _import(
+        client,
+        alex,
+        [_from_browser("2026-11-28"), _from_browser("2026-11-26"), _from_browser("2026-11-27")],
+    )
+
+    assert result == {"imported": ["2026-11-26", "2026-11-27", "2026-11-28"], "conflicts": []}
+    assert _load(client, alex, "2026-11-01", "2026-11-30") == [
+        "2026-11-26",
+        "2026-11-27",
+        "2026-11-28",
+    ]
+
+
+def test_importing_works_for_someone_signing_up_right_now(
+    client: TestClient, fake_clerk: FakeClerk, database_url: str
+) -> None:
+    # The import can arrive before /v1/me has saved them
+    _import(client, signed_in(fake_clerk), [_from_browser("2026-11-28")])
+
+    assert _count_users(database_url) == 1
+
+
+def test_a_day_already_in_the_account_keeps_the_accounts_version_and_is_reported(
+    client: TestClient, fake_clerk: FakeClerk
+) -> None:
+    alex = signed_in(fake_clerk)
+    account = _save_day(client, alex, "2026-11-28", pain=3)
+
+    result = _import(
+        client, alex, [_from_browser("2026-11-28", pain=5), _from_browser("2026-11-27")]
+    )
+
+    # The new day moves in; the day in both comes back so the person can choose
+    assert result["imported"] == ["2026-11-27"]
+    assert result["conflicts"] == [account]
+    # Nothing was overwritten
+    response = client.get(
+        "/v1/check-ins", params={"from": "2026-11-28", "to": "2026-11-28"}, headers=alex
+    )
+    assert response.json()[0]["pain"] == 3
+
+
+def test_identical_copies_are_not_reported(client: TestClient, fake_clerk: FakeClerk) -> None:
+    alex = signed_in(fake_clerk)
+    _save_day(client, alex, "2026-11-28", note="walked the dog")
+
+    # Spaces around the note are trimmed first, so these two count as the same
+    result = _import(client, alex, [_from_browser("2026-11-28", note="  walked the dog ")])
+
+    assert result == {"imported": [], "conflicts": []}
+
+
+def test_conflicts_come_back_oldest_first(client: TestClient, fake_clerk: FakeClerk) -> None:
+    alex = signed_in(fake_clerk)
+    _save_day(client, alex, "2026-11-28", pain=1)
+    _save_day(client, alex, "2026-11-20", pain=1)
+
+    result = _import(
+        client, alex, [_from_browser("2026-11-28", pain=5), _from_browser("2026-11-20", pain=5)]
+    )
+
+    assert [day["date"] for day in result["conflicts"]] == ["2026-11-20", "2026-11-28"]
+
+
+def test_importing_the_same_check_ins_twice_changes_nothing_the_second_time(
+    client: TestClient, fake_clerk: FakeClerk, database_url: str
+) -> None:
+    # Safe to retry if the connection drops halfway
+    alex = signed_in(fake_clerk)
+    browser = [_from_browser("2026-11-27"), _from_browser("2026-11-28")]
+    _import(client, alex, browser)
+
+    again = _import(client, alex, browser)
+
+    assert again == {"imported": [], "conflicts": []}
+    assert _count_check_ins(database_url) == 2
+
+
+def test_importing_only_compares_with_my_own_check_ins(
+    client: TestClient, fake_clerk: FakeClerk
+) -> None:
+    sam = signed_in(fake_clerk, **SAM)
+    _save_day(client, sam, "2026-11-28", pain=1)
+
+    result = _import(client, signed_in(fake_clerk), [_from_browser("2026-11-28", pain=5)])
+
+    # Sam's day is neither a conflict nor touched
+    assert result == {"imported": ["2026-11-28"], "conflicts": []}
+    assert _load(client, sam, "2026-11-28", "2026-11-28") == ["2026-11-28"]
+    response = client.get(
+        "/v1/check-ins", params={"from": "2026-11-28", "to": "2026-11-28"}, headers=sam
+    )
+    assert response.json()[0]["pain"] == 1
+
+
+def test_an_empty_import_does_nothing(client: TestClient, fake_clerk: FakeClerk) -> None:
+    assert _import(client, signed_in(fake_clerk), []) == {"imported": [], "conflicts": []}
+
+
+def test_an_import_with_one_bad_check_in_saves_nothing(
+    client: TestClient, fake_clerk: FakeClerk, database_url: str
+) -> None:
+    response = client.post(
+        "/v1/check-ins/import",
+        json={"check_ins": [_from_browser("2026-11-27"), _from_browser("2026-11-28", pain=9)]},
+        headers=signed_in(fake_clerk),
+    )
+
+    assert response.status_code == 422
+    assert _count_check_ins(database_url) == 0
+
+
+def test_importing_needs_a_valid_sign_in(client: TestClient, database_url: str) -> None:
+    response = client.post(
+        "/v1/check-ins/import", json={"check_ins": [_from_browser("2026-11-28")]}
+    )
+
+    assert response.status_code == 401
+    assert _count_check_ins(database_url) == 0

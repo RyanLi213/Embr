@@ -3,7 +3,7 @@ query here is limited to one person's own check-ins (`user_id`)."""
 
 import datetime as dt
 import uuid
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from typing import Any
 
 from sqlalchemy import func, select
@@ -49,6 +49,40 @@ async def check_ins_between(
     statement = (
         select(CheckIn)
         .where(CheckIn.user_id == user_id, CheckIn.date.between(start, end))
+        .order_by(CheckIn.date)
+    )
+    return (await session.scalars(statement)).all()
+
+
+async def add_missing_days(
+    session: AsyncSession, *, user_id: uuid.UUID, check_ins: list[dict[str, Any]]
+) -> set[dt.date]:
+    """Adds each check-in whose day the person doesn't have yet, and leaves the days
+    already there alone. Returns the days added.
+
+    It's one statement ("insert, but skip any day already there"), so running it
+    twice adds nothing the second time.
+    """
+    if not check_ins:
+        return set()
+    statement = (
+        insert(CheckIn)
+        .values([{**check_in, "user_id": user_id} for check_in in check_ins])
+        .on_conflict_do_nothing(constraint=_ONE_PER_DAY)
+        .returning(CheckIn.date)
+    )
+    return set(await session.scalars(statement))
+
+
+async def check_ins_on(
+    session: AsyncSession, *, user_id: uuid.UUID, days: Collection[dt.date]
+) -> Sequence[CheckIn]:
+    """The person's check-ins on these days, oldest first."""
+    if not days:
+        return []
+    statement = (
+        select(CheckIn)
+        .where(CheckIn.user_id == user_id, CheckIn.date.in_(days))
         .order_by(CheckIn.date)
     )
     return (await session.scalars(statement)).all()

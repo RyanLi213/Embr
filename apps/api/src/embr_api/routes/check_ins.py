@@ -14,6 +14,8 @@ from embr_api.core.database import get_session
 from embr_api.schemas.check_in import (
     CheckInAnswers,
     CheckInDay,
+    CheckInImport,
+    CheckInImportResult,
     CheckInRange,
     CheckInResponse,
 )
@@ -54,3 +56,16 @@ async def load_days(
     session: Session,
 ) -> list[CheckInResponse]:
     return await check_ins.load_check_ins(session, person, days)
+
+
+@router.post(
+    "/import",
+    summary="Move check-ins a browser saved before signing in into the signed-in person's account",
+    responses=_ERRORS,
+)
+async def import_days(
+    browser: CheckInImport,
+    person: SignedIn,
+    session: Session,
+) -> CheckInImportResult:
+    return await check_ins.import_check_ins(session, person, browser)
