@@ -145,6 +145,24 @@ Day colour on the calendar:
   now.
   - To weigh: a limit means a guest's calendar only shows the days kept, and
     only those move into their account when they sign up.
+- [ ] Saved food spots (idea 2026-11-28): people share a reel, YouTube Short or
+  TikTok of food they like, and the AI assistant saves the place in Embr.
+  People choose what they eat; Embr never says a food is good or bad for
+  arthritis.
+  - The assistant reads the post's caption or title (apps can't watch the
+    video), finds the place with Google's Maps tools for AI (MCP, free), and
+    asks "Is this ...?" before saving.
+  - Saved straight to Embr's own list, like Instagram's "Added to Spotify".
+    Google Maps and Apple Maps don't let other apps add to someone's saved
+    places, so "Save to Google Maps" is an extra one-tap link.
+  - Each spot shows access details from Google (step-free entrance, seating,
+    parking, restroom), with an "easy on a bad day" filter.
+  - Maybe: copy someone's Google Maps Starred places into Embr once (Google's
+    Data Portability API, read only).
+  - Needs the mobile app (to appear in the phone's Share menu; on the web,
+    paste the link) and consent (Milestone 3), since places plus health data
+    are sensitive.
+  - Track: how often the assistant finds the right place on the first try.
 
 ## Guests and accounts (agreed 2026-11-14)
 
