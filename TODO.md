@@ -45,6 +45,12 @@ Starts after sign-in is done.
 
 - [ ] Privacy and consent. Embr is a prototype for now, so sign-in is built
   first, without this.
+- [ ] Before the first real user (decided 2026-11-28): row-level security on
+  health-data tables (Postgres itself only hands back the signed-in person's
+  rows, even if a query forgets to filter), and an audit log of every read of
+  health data. Needs a second, weaker database login for the API, while
+  migrations keep the owner login (Neon, Secret Manager, Terraform and the
+  deploy workflow change).
 - [ ] Make moving between pages smooth and optimized. Going to another page,
   like Calendar, feels rigid right now; the site should feel high quality.
   Ideas to look at: page transition animations, showing something straight
