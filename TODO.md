@@ -80,12 +80,9 @@ Day colour on the calendar:
 
 ## Later
 
-- [ ] AWS (on hold since 2026-11-28; Google Cloud is fine for now): the ID and
-  card statement weren't sent by the 2026-11-27 deadline, so the accounts may
-  be closed. When picking it up, first check each account's status through
-  AWS Settings → Contact support. If approved, AWS is a later option (Lambda
-  practice, S3 for files). On the Free plan, don't turn on IAM Identity Center
-  or AWS Organizations: they end the credits.
+- [ ] Maybe switch the API to AWS later (Lambda, then ECS; S3 for files).
+  Google Cloud is fine for now. On AWS's Free plan, don't turn on IAM Identity
+  Center or AWS Organizations: they end the credits.
 - [ ] Split `/v1/health` into "is it running?" (always 200) and "is it
   ready?" (503 when the database is down), and add a Google Cloud uptime
   check that emails Ryan when "ready" fails. Today `/v1/health` answers 200
