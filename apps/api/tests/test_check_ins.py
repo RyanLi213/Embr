@@ -33,6 +33,23 @@ def _count_users(database_url: str) -> int:
     return count
 
 
+def _save_day(
+    client: TestClient, headers: dict[str, str], day: str, **changes: Any
+) -> dict[str, Any]:
+    """Saves one day through the API (for setting up the load and import tests)."""
+    response = client.put(f"/v1/check-ins/{day}", json={**GOOD_ANSWERS, **changes}, headers=headers)
+    assert response.status_code == 200
+    saved: dict[str, Any] = response.json()
+    return saved
+
+
+def _load(client: TestClient, headers: dict[str, str], start: str, end: str) -> list[str]:
+    """The days the API sends back for a range."""
+    response = client.get("/v1/check-ins", params={"from": start, "to": end}, headers=headers)
+    assert response.status_code == 200
+    return [check_in["date"] for check_in in response.json()]
+
+
 # --- Saving a day: PUT /v1/check-ins/{date} ---
 
 
@@ -168,3 +185,77 @@ def test_two_people_saving_the_same_day_each_get_their_own(
         )
     )
     assert rows == [("user_sam456", 1), ("user_test123", 3)]
+
+
+# --- Loading a range: GET /v1/check-ins?from=...&to=... ---
+
+
+def test_loading_gives_the_days_in_the_range_oldest_first_with_both_ends_included(
+    client: TestClient, fake_clerk: FakeClerk
+) -> None:
+    alex = signed_in(fake_clerk)
+    # Saved out of order, with one day just outside each end of October
+    for day in ["2026-10-31", "2026-09-30", "2026-10-15", "2026-11-01", "2026-10-01"]:
+        _save_day(client, alex, day)
+
+    assert _load(client, alex, "2026-10-01", "2026-10-31") == [
+        "2026-10-01",
+        "2026-10-15",
+        "2026-10-31",
+    ]
+
+
+def test_loading_sends_back_every_answer(client: TestClient, fake_clerk: FakeClerk) -> None:
+    saved = _save_day(client, signed_in(fake_clerk), "2026-11-28", pain=5, flare=True)
+
+    response = client.get(
+        "/v1/check-ins",
+        params={"from": "2026-11-28", "to": "2026-11-28"},
+        headers=signed_in(fake_clerk),
+    )
+
+    assert response.json() == [saved]
+
+
+def test_loading_never_shows_someone_elses_check_ins(
+    client: TestClient, fake_clerk: FakeClerk
+) -> None:
+    alex = signed_in(fake_clerk)
+    sam = signed_in(fake_clerk, **SAM)
+    _save_day(client, alex, "2026-11-28")
+    _save_day(client, sam, "2026-11-27")
+    _save_day(client, sam, "2026-11-28")
+
+    assert _load(client, alex, "2026-11-01", "2026-11-30") == ["2026-11-28"]
+    assert _load(client, sam, "2026-11-01", "2026-11-30") == ["2026-11-27", "2026-11-28"]
+
+
+def test_loading_with_no_check_ins_gives_an_empty_list_and_changes_nothing(
+    client: TestClient, fake_clerk: FakeClerk, database_url: str
+) -> None:
+    # A GET only reads: it doesn't save the person, unlike saving a check-in
+    assert _load(client, signed_in(fake_clerk), "2026-11-01", "2026-11-30") == []
+    assert _count_users(database_url) == 0
+
+
+def test_loading_needs_a_valid_sign_in(client: TestClient) -> None:
+    response = client.get("/v1/check-ins", params={"from": "2026-11-01", "to": "2026-11-30"})
+
+    assert response.status_code == 401
+
+
+def test_loading_refuses_a_backwards_or_too_long_range(
+    client: TestClient, fake_clerk: FakeClerk
+) -> None:
+    backwards = client.get(
+        "/v1/check-ins",
+        params={"from": "2026-11-30", "to": "2026-11-01"},
+        headers=signed_in(fake_clerk),
+    )
+    too_long = client.get(
+        "/v1/check-ins",
+        params={"from": "2025-01-01", "to": "2026-01-02"},
+        headers=signed_in(fake_clerk),
+    )
+
+    assert (backwards.status_code, too_long.status_code) == (422, 422)

@@ -3,9 +3,10 @@ query here is limited to one person's own check-ins (`user_id`)."""
 
 import datetime as dt
 import uuid
+from collections.abc import Sequence
 from typing import Any
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -35,3 +36,19 @@ async def save_check_in(
     # populate_existing: if this check-in is already loaded, refresh it with the new values
     result = await session.scalars(statement, execution_options={"populate_existing": True})
     return result.one()
+
+
+async def check_ins_between(
+    session: AsyncSession, *, user_id: uuid.UUID, start: dt.date, end: dt.date
+) -> Sequence[CheckIn]:
+    """The person's check-ins from `start` to `end` (both included), oldest first.
+
+    The one-per-day rule's index covers (user_id, date), so this stays fast as
+    the table grows.
+    """
+    statement = (
+        select(CheckIn)
+        .where(CheckIn.user_id == user_id, CheckIn.date.between(start, end))
+        .order_by(CheckIn.date)
+    )
+    return (await session.scalars(statement)).all()

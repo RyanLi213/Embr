@@ -6,12 +6,17 @@ these are, so nobody can reach someone else's by changing the address.
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from embr_api.core.auth import SignedInPerson, get_signed_in_person
 from embr_api.core.database import get_session
-from embr_api.schemas.check_in import CheckInAnswers, CheckInDay, CheckInResponse
+from embr_api.schemas.check_in import (
+    CheckInAnswers,
+    CheckInDay,
+    CheckInRange,
+    CheckInResponse,
+)
 from embr_api.services import check_ins
 
 router = APIRouter(prefix="/check-ins", tags=["check-ins"])
@@ -36,3 +41,16 @@ async def save_day(
     session: Session,
 ) -> CheckInResponse:
     return await check_ins.save_check_in(session, person, date, answers)
+
+
+@router.get(
+    "",
+    summary="The signed-in person's check-ins between two days (both included), oldest first",
+    responses=_ERRORS,
+)
+async def load_days(
+    days: Annotated[CheckInRange, Query()],
+    person: SignedIn,
+    session: Session,
+) -> list[CheckInResponse]:
+    return await check_ins.load_check_ins(session, person, days)

@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from embr_api.core.auth import SignedInPerson
 from embr_api.repositories import check_ins
-from embr_api.repositories.users import save_signed_in_user
-from embr_api.schemas.check_in import CheckInAnswers, CheckInResponse
+from embr_api.repositories.users import find_user_id, save_signed_in_user
+from embr_api.schemas.check_in import CheckInAnswers, CheckInRange, CheckInResponse
 
 
 async def _user_id_of(session: AsyncSession, person: SignedInPerson) -> uuid.UUID:
@@ -37,3 +37,17 @@ async def save_check_in(
     )
     await session.commit()
     return CheckInResponse.model_validate(check_in)
+
+
+async def load_check_ins(
+    session: AsyncSession, person: SignedInPerson, days: CheckInRange
+) -> list[CheckInResponse]:
+    """The person's check-ins in the range, oldest first. Only reads: someone never
+    saved simply has none."""
+    user_id = await find_user_id(session, clerk_id=person.clerk_id)
+    if user_id is None:
+        return []
+    found = await check_ins.check_ins_between(
+        session, user_id=user_id, start=days.start, end=days.end
+    )
+    return [CheckInResponse.model_validate(check_in) for check_in in found]

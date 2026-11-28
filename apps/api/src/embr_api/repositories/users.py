@@ -1,10 +1,20 @@
 """Database code for users. Only repositories talk to the database."""
 
-from sqlalchemy import func
+import uuid
+
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from embr_api.models.user import User
+
+
+async def find_user_id(session: AsyncSession, *, clerk_id: str) -> uuid.UUID | None:
+    """Our own ID for the person with this Clerk ID, or None if they were never saved."""
+    user_id: uuid.UUID | None = await session.scalar(
+        select(User.id).where(User.clerk_id == clerk_id)
+    )
+    return user_id
 
 
 async def save_signed_in_user(
